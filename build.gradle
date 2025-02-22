@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    id 'application'
+}
+
+group = 'org.nhnnext'
+version = '1.0'
+description = 'web-application-server'
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+application {
+    mainClassName = "webserver.WebServer"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
+
+    testImplementation 'org.assertj:assertj-core:3.26.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
