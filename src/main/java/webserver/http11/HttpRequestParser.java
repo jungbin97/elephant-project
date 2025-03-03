@@ -15,6 +15,7 @@ import java.util.Map;
 public class HttpRequestParser {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String CONTENT_TYPE = "Content-Type";
 
     private HttpRequestParser() {
         throw new IllegalStateException("Utility class");
@@ -57,6 +58,7 @@ public class HttpRequestParser {
         }
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader(headers);
 
+        String contentType = headers.getOrDefault(CONTENT_TYPE, "");
         String body = null;
         if (headers.containsKey(CONTENT_LENGTH)) {
             String contentLengthValue = headers.get(CONTENT_LENGTH);
@@ -65,10 +67,9 @@ public class HttpRequestParser {
                 body = IOUtils.readData(reader, contentLength);
             }
         }
-        HttpRequestBody httpRequestBody = new HttpRequestBody(body);
+        HttpRequestBody httpRequestBody = new HttpRequestBody(body, contentType);
 
         log.debug("Request : {}", new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody));
-
         return new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody);
     }
 }
