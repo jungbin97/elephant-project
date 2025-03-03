@@ -9,8 +9,8 @@ public class HttpRequestHeader {
         this.headers = headers;
     }
 
-    public String getHeader(String key) {
-        return headers.get(key);
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
     @Override
