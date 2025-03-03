@@ -41,7 +41,6 @@ public class HttpRequestParser {
             if (headerLine.isEmpty()) {
                 break;
             }
-            log.debug("Header Line: {}", headerLine);
             int colonIndex = headerLine.indexOf(":");
             if (colonIndex == -1 || colonIndex == 0 || colonIndex == headerLine.length() - 1) {
                 throw new IOException("Invalid HTTP header");
@@ -66,7 +65,6 @@ public class HttpRequestParser {
                 body = IOUtils.readData(reader, contentLength);
             }
         }
-        log.debug("Body 내용: {}", body);
         HttpRequestBody httpRequestBody = new HttpRequestBody(body);
 
         log.debug("Request : {}", new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody));
