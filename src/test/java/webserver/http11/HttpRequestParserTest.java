@@ -28,7 +28,7 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("GET");
         assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html");
         assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
-        assertThat(httpRequest.getHeaders().getHeader("Host")).isEqualTo("localhost:8080");
+        assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Host", "localhost:8080");
     }
 
     @Test
@@ -78,8 +78,8 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("POST");
         assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html");
         assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
-        assertThat(httpRequest.getHeaders().getHeader("Host")).isEqualTo("localhost:8080");
-        assertThat(httpRequest.getHeaders().getHeader("Content-Length")).isEqualTo("10");
+        assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Host", "localhost:8080");
+        assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Content-Length", "10");
         assertThat(httpRequest.getBody().getBody()).isEqualTo("1234567890");
     }
 
@@ -100,7 +100,7 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("DELETE");
         assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html");
         assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
-        assertThat(httpRequest.getHeaders().getHeader("Host")).isEqualTo("localhost:8080");
+        assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Host", "localhost:8080");
     }
 
     @Test
@@ -122,6 +122,28 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
         assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("name", "abc");
         assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("age", "20");
+    }
+
+    @Test
+    @DisplayName("POST 요청의 application/x-www-form-urlencoded타입 바디 파라미터를 정상적으로 파싱해야 한다.")
+    void parsePostBodyParams() throws IOException {
+        // given
+        String rawRequest = "POST /index.html HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Content-Type: application/x-www-form-urlencoded\r\n" +
+                "Content-Length: 15\r\n" +
+                "\r\n" +
+                "name=abc&age=20";
+        ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
+
+        // when
+        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+
+        // then
+        assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("POST");
+        assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Content-Type", "application/x-www-form-urlencoded");
+        assertThat(httpRequest.getBody().getParameters()).containsEntry("name", "abc");
+        assertThat(httpRequest.getBody().getParameters()).containsEntry("age", "20");
     }
 
 }
