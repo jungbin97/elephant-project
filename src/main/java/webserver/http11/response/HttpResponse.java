@@ -37,4 +37,16 @@ public class HttpResponse {
             default -> "Unknown Status";
         };
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getHeader(String key) {
+        return headers.get(key);
+    }
+
+    public byte[] getBody() {
+        return body;
+    }
 }
