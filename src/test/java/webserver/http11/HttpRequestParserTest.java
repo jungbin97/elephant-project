@@ -103,4 +103,25 @@ class HttpRequestParserTest {
         assertThat(httpRequest.getHeaders().getHeader("Host")).isEqualTo("localhost:8080");
     }
 
+    @Test
+    @DisplayName("GET 요청의 쿼리 스트링을 정상적으로 파싱해야 한다.")
+    void parseGetQueryString() throws IOException {
+        // given
+        String rawRequest = "GET /index.html?name=abc&age=20 HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "\r\n";
+
+        ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
+
+        // when
+        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+
+        // then
+        assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("GET");
+        assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html");
+        assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
+        assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("name", "abc");
+        assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("age", "20");
+    }
+
 }
