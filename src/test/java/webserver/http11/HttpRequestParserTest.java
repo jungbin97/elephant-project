@@ -118,10 +118,10 @@ class HttpRequestParserTest {
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("GET");
-        assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html");
+        assertThat(httpRequest.getStartLine().getRequestUri()).isEqualTo("/index.html?name=abc&age=20");
         assertThat(httpRequest.getStartLine().getHttpVersion()).isEqualTo("HTTP/1.1");
-        assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("name", "abc");
-        assertThat(httpRequest.getStartLine().getQueryParams()).containsEntry("age", "20");
+        assertThat(httpRequest.getQueryParameters()).containsEntry("name", "abc");
+        assertThat(httpRequest.getQueryParameters()).containsEntry("age", "20");
     }
 
     @Test
@@ -142,8 +142,8 @@ class HttpRequestParserTest {
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("POST");
         assertThat(httpRequest.getHeaders().getHeaders()).containsEntry("Content-Type", "application/x-www-form-urlencoded");
-        assertThat(httpRequest.getBody().getParameters()).containsEntry("name", "abc");
-        assertThat(httpRequest.getBody().getParameters()).containsEntry("age", "20");
+        assertThat(httpRequest.getQueryParameters()).containsEntry("name", "abc");
+        assertThat(httpRequest.getQueryParameters()).containsEntry("age", "20");
     }
 
 }
