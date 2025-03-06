@@ -2,6 +2,7 @@ package webserver.http11;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.HttpRequestUtils;
 import util.IOUtils;
 import webserver.http11.request.*;
 
@@ -16,6 +17,7 @@ public class HttpRequestParser {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String CONTENT_TYPE = "Content-Type";
+    private static final String X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
     private HttpRequestParser() {
         throw new IllegalStateException("Utility class");
@@ -33,11 +35,19 @@ public class HttpRequestParser {
         String method = requestStartLineTokens[0];
         String requestUri = requestStartLineTokens[1];
         String httpVersion = requestStartLineTokens[2];
+
+        Map<String, String> queryParameters = new HashMap<>();
+        int queryIndex = requestUri.indexOf("?");
+        if (queryIndex != -1) {
+            String queryString = requestUri.substring(queryIndex + 1);
+            queryParameters.putAll(HttpRequestUtils.parseQueryString(queryString));
+        }
+
         HttpRequestStartLine httpRequestStartLine = new HttpRequestStartLine(method, requestUri, httpVersion);
+
 
         Map<String, String> headers = new HashMap<>();
         String headerLine;
-
         while ((headerLine = reader.readLine()) != null) {
             if (headerLine.isEmpty()) {
                 break;
@@ -58,7 +68,6 @@ public class HttpRequestParser {
         }
         HttpRequestHeader httpRequestHeader = new HttpRequestHeader(headers);
 
-        String contentType = headers.getOrDefault(CONTENT_TYPE, "");
         String body = null;
         if (headers.containsKey(CONTENT_LENGTH)) {
             String contentLengthValue = headers.get(CONTENT_LENGTH);
@@ -67,9 +76,15 @@ public class HttpRequestParser {
                 body = IOUtils.readData(reader, contentLength);
             }
         }
-        HttpRequestBody httpRequestBody = new HttpRequestBody(body, contentType);
 
-        log.debug("Request : {}", new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody));
-        return new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody);
+        // Content-Type이 application/x-www-form-urlencoded인 경우에만 body를 파싱
+        if (headers.containsKey(CONTENT_TYPE) && headers.get(CONTENT_TYPE).equals(X_WWW_FORM_URLENCODED)) {
+            queryParameters.putAll(HttpRequestUtils.parseQueryString(body));
+        }
+
+        HttpRequestBody httpRequestBody = new HttpRequestBody(body);
+
+        log.debug("Request : {}", new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody, queryParameters));
+        return new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody, queryParameters);
     }
 }
