@@ -13,8 +13,8 @@ public class RequestDispatcher {
     private final StaticResourceProcessor staticResourceProcessor;
     private final Map<String, Controller> controllers;
 
-    public RequestDispatcher(StaticResourceProcessor staticResourceHandler) {
-        this.staticResourceProcessor = staticResourceHandler;
+    public RequestDispatcher(StaticResourceProcessor staticResourceProcessor) {
+        this.staticResourceProcessor = staticResourceProcessor;
         this.controllers = new HashMap<>();
 
         // Add controllers
