@@ -9,7 +9,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http11.response.HttpResponse;
-import webserver.processor.StaticResourceProcessor;
+import webserver.processor.RequestDispatcher;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 
@@ -17,11 +17,11 @@ public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final StaticResourceProcessor staticResourceProcessor;
+    private final RequestDispatcher requestDispatcher;
 
-    public RequestHandler(Socket connectionSocket, StaticResourceProcessor resourceProcessor) {
+    public RequestHandler(Socket connectionSocket, RequestDispatcher requestDispatcher) {
         this.connection = connectionSocket;
-        this.staticResourceProcessor =  resourceProcessor;
+        this.requestDispatcher = requestDispatcher;
     }
 
     @Override
@@ -35,8 +35,7 @@ public class RequestHandler extends Thread {
             // HTTP 요청 파싱
             HttpRequest request = HttpRequestParser.parse(in);
 
-            // 정적 자원 처리
-            HttpResponse response = staticResourceProcessor.process(request);
+            HttpResponse response = requestDispatcher.dispatch(request);
             response.sendResponse(dos);
 
         } catch (IOException e) {
