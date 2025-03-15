@@ -3,6 +3,7 @@ package webserver.processor;
 import webserver.controller.Controller;
 import webserver.controller.LoginController;
 import webserver.controller.UserController;
+import webserver.controller.UserListController;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 
@@ -21,6 +22,7 @@ public class RequestDispatcher {
         // Add controllers
         controllers.put("/user/create", new UserController());
         controllers.put("/user/login", new LoginController());
+        controllers.put("/user/list", new UserListController());
     }
 
     public HttpResponse dispatch(HttpRequest request) throws IOException {
