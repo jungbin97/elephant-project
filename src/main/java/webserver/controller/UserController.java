@@ -1,5 +1,6 @@
 package webserver.controller;
 
+import db.DataBase;
 import model.User;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
@@ -17,6 +18,7 @@ public class UserController implements Controller {
         String email = queryParameters.get("email");
 
         User user = new User(userId, password, name, email);
+        DataBase.addUser(user);
 
         // index.html로 redirect
         return new HttpResponse(302, "/index.html");
