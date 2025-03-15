@@ -56,6 +56,10 @@ public class HttpResponse {
         };
     }
 
+    public void addHeader(String key, String value) {
+        headers.put(key, value);
+    }
+
     public int getStatusCode() {
         return statusCode;
     }

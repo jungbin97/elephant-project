@@ -1,6 +1,7 @@
 package webserver.processor;
 
 import webserver.controller.Controller;
+import webserver.controller.LoginController;
 import webserver.controller.UserController;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
@@ -19,6 +20,7 @@ public class RequestDispatcher {
 
         // Add controllers
         controllers.put("/user/create", new UserController());
+        controllers.put("/user/login", new LoginController());
     }
 
     public HttpResponse dispatch(HttpRequest request) throws IOException {
@@ -26,7 +28,7 @@ public class RequestDispatcher {
 
         // Dispatch to controller
         for (Map.Entry<String, Controller> entry : controllers.entrySet()) {
-            if (requestUri.startsWith(entry.getKey())) {
+            if (requestUri.equals(entry.getKey())) {
                 return entry.getValue().handle(request);
             }
         }
