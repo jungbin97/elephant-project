@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
-public class HttpRequestUtils {
+public final class HttpRequestUtils {
 
     private HttpRequestUtils() {
         throw new IllegalStateException("Utility class");
