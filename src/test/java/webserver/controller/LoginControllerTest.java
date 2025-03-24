@@ -35,8 +35,10 @@ class LoginControllerTest {
                 "email", "test@naver.com"
         ));
 
+        HttpResponse response = new HttpResponse();
+
         // when
-        HttpResponse response = loginController.handle(mockRequest);
+        loginController.service(mockRequest, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(302);
@@ -56,8 +58,10 @@ class LoginControllerTest {
                 "email", "test@naver.com"
         ));
 
+        HttpResponse response = new HttpResponse();
+
         // when
-        HttpResponse response = loginController.handle(mockRequest);
+        loginController.service(mockRequest, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(302);

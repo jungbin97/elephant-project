@@ -42,14 +42,22 @@ class RequestDispatcherTest {
         when(mockRequest.getStartLine()).thenReturn(mockStartLine);
         when(mockRequest.getStartLine().getRequestUri()).thenReturn("/index.html");
 
-        HttpResponse mockResponse = new HttpResponse(200, "text/html", "<html>test</html>".getBytes());
-        when(mockStaticResourceProcessor.process(mockRequest)).thenReturn(mockResponse);
-
+        // process(HttpRequest, HttpResponse) 시그니처로 Mock 설정
+        when(mockStaticResourceProcessor.process(eq(mockRequest), any(HttpResponse.class)))
+                .thenAnswer(invocation -> {
+                    // invocation.getArgument(1)은 실제로 넘겨줄 HttpResponse 객체
+                    HttpResponse respArg = invocation.getArgument(1);
+                    respArg.setStatusCode(200);
+                    respArg.setHeader("Content-Type", "text/html");
+                    respArg.setBody("<html>test</html>".getBytes());
+                    return respArg; // 실제 반환
+                });
         // when
-        HttpResponse httpResponse = requestDispatcher.dispatch(mockRequest);
+        HttpResponse actualResponse = requestDispatcher.dispatch(mockRequest);
 
         // then
-        Assertions.assertThat(httpResponse.getStatusCode()).isEqualTo(200);
-        verify(mockStaticResourceProcessor, times(1)).process(mockRequest);
+        Assertions.assertThat(actualResponse.getStatusCode()).isEqualTo(200);
+        Assertions.assertThat(new String(actualResponse.getBody())).contains("test");
+        verify(mockStaticResourceProcessor, times(1)).process(eq(mockRequest), any(HttpResponse.class));
     }
 }

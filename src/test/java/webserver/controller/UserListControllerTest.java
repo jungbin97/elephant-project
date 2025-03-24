@@ -35,8 +35,9 @@ class UserListControllerTest {
         when(request.getHeaders()).thenReturn(header);
         when(header.getHeaders()).thenReturn(Map.of("Cookie", "logined=true"));
 
+        HttpResponse response = new HttpResponse();
         // when
-         HttpResponse response = userListController.handle(request);
+         userListController.service(request, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(200);
@@ -54,8 +55,9 @@ class UserListControllerTest {
         when(request.getHeaders()).thenReturn(header);
         when(header.getHeaders()).thenReturn(Map.of("Cookie", "logined=false"));
 
+        HttpResponse response = new HttpResponse();
         // when
-        HttpResponse response = userListController.handle(request);
+        userListController.service(request, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(302);
