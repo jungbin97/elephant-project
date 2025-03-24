@@ -10,7 +10,7 @@ import java.util.Map;
 public class UserController implements Controller {
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void service(HttpRequest request, HttpResponse response) {
         Map<String, String> queryParameters = request.getQueryParameters();
         String userId = queryParameters.get("userId");
         String password = queryParameters.get("password");
@@ -20,7 +20,6 @@ public class UserController implements Controller {
         User user = new User(userId, password, name, email);
         DataBase.addUser(user);
 
-        // index.html로 redirect
-        return new HttpResponse(302, "/index.html");
+        response.sendRedirect("/index.html");
     }
 }

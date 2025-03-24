@@ -11,12 +11,14 @@ import java.util.Collection;
 public class UserListController implements Controller {
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void service(HttpRequest request, HttpResponse response) {
         if (isLogined(request)) {
-            return new HttpResponse(200, "text/html", createHtml().getBytes());
+            response.setStatusCode(200);
+            response.setHeader("Content-Type", "text/html");
+            response.setBody(createHtml().getBytes());
+        } else {
+            response.sendRedirect("/user/login.html");
         }
-
-        return new HttpResponse(302, "/user/login.html");
     }
 
     private boolean isLogined(HttpRequest request) {

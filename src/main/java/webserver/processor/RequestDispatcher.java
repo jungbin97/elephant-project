@@ -27,14 +27,16 @@ public class RequestDispatcher {
 
     public HttpResponse dispatch(HttpRequest request) throws IOException {
         String requestUri = request.getStartLine().getRequestUri();
+        HttpResponse response = new HttpResponse();
 
         // Dispatch to controller
         for (Map.Entry<String, Controller> entry : controllers.entrySet()) {
             if (requestUri.equals(entry.getKey())) {
-                return entry.getValue().handle(request);
+                entry.getValue().service(request, response);
+                return response;
             }
         }
 
-        return staticResourceProcessor.process(request);
+        return staticResourceProcessor.process(request, response);
     }
 }

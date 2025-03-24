@@ -10,21 +10,19 @@ import java.util.Map;
 public class LoginController implements Controller {
 
     @Override
-    public HttpResponse handle(HttpRequest request) {
+    public void service(HttpRequest request, HttpResponse response) {
         Map<String, String> queryParameters = request.getQueryParameters();
         String userId = queryParameters.get("userId");
         String password = queryParameters.get("password");
 
         User user = DataBase.findUserById(userId);
 
-        HttpResponse response;
         if (user != null && user.getPassword().equals(password)) {
-            response = new HttpResponse(302, "/index.html");
             response.addHeader("Set-Cookie", "logined=true");
+            response.sendRedirect("/index.html");
         } else {
-            response = new HttpResponse(302, "/user/login_failed.html");
             response.addHeader("Set-Cookie", "logined=false");
+            response.sendRedirect("/user/login_failed.html");
         }
-        return response;
     }
 }
