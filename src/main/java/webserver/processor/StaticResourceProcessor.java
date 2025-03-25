@@ -10,7 +10,8 @@ import java.nio.file.Paths;
 public class StaticResourceProcessor {
     private static final String STATIC_RESOURCE_PATH = "./webapp";
 
-    public HttpResponse process(HttpRequest request) throws IOException {
+    public HttpResponse process(HttpRequest request, HttpResponse httpResponse) throws IOException {
+
         String path = request.getStartLine().getRequestUri();
         String fullPath = STATIC_RESOURCE_PATH + (path.startsWith("/") ? path : "/" + path);
 
@@ -18,10 +19,16 @@ public class StaticResourceProcessor {
             byte[] fileBytes = Files.readAllBytes(Paths.get(fullPath));
             String mimeType = getMimeType(path);
 
-            return new HttpResponse(200, mimeType, fileBytes);
+            httpResponse.setStatusCode(200);
+            httpResponse.setHeader("Content-Type", mimeType);
+            httpResponse.setBody(fileBytes);
+        } else {
+            httpResponse.setStatusCode(404);
+            httpResponse.setHeader("Content-Type", "text/plain");
+            httpResponse.setBody("Not Found".getBytes());
         }
 
-        return new HttpResponse(404, "text/plain", "Not Found".getBytes());
+        return httpResponse;
     }
 
     public static String getMimeType(String requestUri) {

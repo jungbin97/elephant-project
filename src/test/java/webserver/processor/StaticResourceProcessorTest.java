@@ -31,8 +31,9 @@ class StaticResourceProcessorTest {
         String testFilePath = "./webapp/test.html";
         Files.write(Paths.get(testFilePath), "<html>test</html>".getBytes());
 
+        HttpResponse response = new HttpResponse();
         // when
-        HttpResponse response = staticResourceProcessor.process(mockRequest);
+        staticResourceProcessor.process(mockRequest, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(200);
@@ -53,9 +54,9 @@ class StaticResourceProcessorTest {
         when(mockRequest.getStartLine()).thenReturn(mockStartLine);
         when(mockRequest.getStartLine().getRequestUri()).thenReturn("/nonexistent.html");
 
-
+        HttpResponse response = new HttpResponse();
         // when
-        HttpResponse response = staticResourceProcessor.process(mockRequest);
+        staticResourceProcessor.process(mockRequest, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(404);

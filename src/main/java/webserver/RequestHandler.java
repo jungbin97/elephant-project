@@ -34,8 +34,8 @@ public class RequestHandler extends Thread {
              DataOutputStream dos = new DataOutputStream(out)) {
             // HTTP 요청 파싱
             HttpRequest request = HttpRequestParser.parse(in);
-
             HttpResponse response = requestDispatcher.dispatch(request);
+
             response.sendResponse(dos);
 
         } catch (IOException e) {

@@ -25,8 +25,9 @@ class UserControllerTest {
                 "email", "test"
         ));
 
+        HttpResponse response = new HttpResponse();
         // when
-        HttpResponse response = userController.handle(mockRequest);
+        userController.service(mockRequest, response);
 
         // then
         Assertions.assertThat(response.getStatusCode()).isEqualTo(302);

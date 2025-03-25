@@ -6,27 +6,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
-    private final int statusCode;
+    private  int statusCode;
     private final Map<String, String> headers = new HashMap<>();
-    private final byte[] body;
+    private  byte[] body;
 
-    public HttpResponse(int statusCode, String contentType, byte[] body) {
+    public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
-        this.body = body != null ? body : new byte[0];
-        if (contentType != null && !contentType.isEmpty()) {
-            headers.put("Content-Type", contentType);
-        }
-        this.headers.put("Content-Length", String.valueOf(this.body.length));
     }
 
-    public HttpResponse(int statusCode, String location) {
-        if (statusCode != 301 && statusCode != 302 && statusCode != 307 && statusCode != 308) {
-            throw new IllegalArgumentException("Invalid status code for redirect: " + statusCode);
-        }
-        this.statusCode = statusCode;
-        this.body = new byte[0];
-        this.headers.put("Location", location);
-        this.headers.put("Content-Length", "0");
+    public void setHeader(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public void setBody(byte[] body) {
+        this.body = body;
+        headers.put("Content-Length", String.valueOf(body.length));
+    }
+
+    public void sendRedirect(String location) {
+        this.statusCode = 302;
+        headers.put("Location", location);
+        headers.put("Content-Length", "0");
     }
 
     public void sendResponse(DataOutputStream dos) throws IOException {
