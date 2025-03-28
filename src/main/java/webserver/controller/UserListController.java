@@ -2,9 +2,9 @@ package webserver.controller;
 
 import db.DataBase;
 import model.User;
-import util.HttpRequestUtils;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.http11.session.HttpSession;
 
 import java.util.Collection;
 
@@ -12,7 +12,7 @@ public class UserListController implements Controller {
 
     @Override
     public void service(HttpRequest request, HttpResponse response) {
-        if (isLogined(request)) {
+        if (isLogined(request.getSession())) {
             response.setStatusCode(200);
             response.setHeader("Content-Type", "text/html");
             response.setBody(createHtml().getBytes());
@@ -21,13 +21,13 @@ public class UserListController implements Controller {
         }
     }
 
-    private boolean isLogined(HttpRequest request) {
-        String cookie = request.getHeaders().getHeaders().get("Cookie");
-        if (cookie == null) {
+    private boolean isLogined(HttpSession session) {
+        Object user = session.getAttribute("user");
+
+        if (user == null) {
             return false;
         }
-        String value = HttpRequestUtils.parseCookies(cookie).get("logined");
-        return Boolean.parseBoolean(value);
+        return true;
     }
 
     private String createHtml() {
