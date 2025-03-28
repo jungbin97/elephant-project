@@ -31,6 +31,10 @@ public class HttpRequest {
         return queryParameters;
     }
 
+    public HttpCookie getCookies() {
+        return new HttpCookie(getHeaders().getHeaders().get("Cookie"));
+    }
+
     @Override
     public String toString() {
         return "HttpRequest [startLine=" + startLine + ", header=" + headers + ", body=" + body + "]";
