@@ -2,7 +2,6 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.HttpRequestUtils;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 import java.util.UUID;
 
 public class RequestHandler extends Thread {
@@ -39,8 +37,12 @@ public class RequestHandler extends Thread {
             HttpRequest request = HttpRequestParser.parse(in);
             HttpResponse response = requestDispatcher.dispatch(request);
 
-            if (getSessionId(request.getCookies().getCookie("JSESSIONID")) == null) {
+
+
+            // 세션 ID가 없으면 새로 생성
+            if (request.getCookies().getCookie("JSESSIONID") == null) {
                 response.addHeader("set-cookie", "JSESSIONID=" + UUID.randomUUID());
+
             }
 
             response.sendResponse(dos);
@@ -50,8 +52,4 @@ public class RequestHandler extends Thread {
         }
     }
 
-    private String getSessionId(String cookieValue) {
-        Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieValue);
-        return cookies.get("JSESSIONID");
-    }
 }
