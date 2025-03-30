@@ -4,6 +4,7 @@ import db.DataBase;
 import model.User;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.http11.session.HttpSession;
 
 import java.util.Map;
 
@@ -18,10 +19,10 @@ public class LoginController implements Controller {
         User user = DataBase.findUserById(userId);
 
         if (user != null && user.getPassword().equals(password)) {
-            response.addHeader("Set-Cookie", "logined=true");
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
             response.sendRedirect("/index.html");
         } else {
-            response.addHeader("Set-Cookie", "logined=false");
             response.sendRedirect("/user/login_failed.html");
         }
     }

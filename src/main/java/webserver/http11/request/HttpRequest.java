@@ -1,5 +1,8 @@
 package webserver.http11.request;
 
+import webserver.http11.session.HttpSession;
+import webserver.http11.session.HttpSessions;
+
 import java.util.Map;
 
 public class HttpRequest {
@@ -29,6 +32,14 @@ public class HttpRequest {
 
     public Map<String, String> getQueryParameters() {
         return queryParameters;
+    }
+
+    public HttpCookie getCookies() {
+        return new HttpCookie(getHeaders().getHeaders().get("Cookie"));
+    }
+
+    public HttpSession getSession() {
+        return HttpSessions.getSession(getCookies().getCookie("JSESSIONID"));
     }
 
     @Override
