@@ -6,6 +6,7 @@ import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 import webserver.processor.RequestDispatcher;
+import webserver.processor.StaticResourceProcessor;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,10 +20,12 @@ public class RequestHandler extends Thread {
 
     private final Socket connection;
     private final RequestDispatcher requestDispatcher;
+    private final StaticResourceProcessor staticResourceProcessor;
 
-    public RequestHandler(Socket connectionSocket, RequestDispatcher requestDispatcher) {
+    public RequestHandler(Socket connectionSocket, RequestDispatcher requestDispatcher, StaticResourceProcessor staticResourceProcessor) {
         this.connection = connectionSocket;
         this.requestDispatcher = requestDispatcher;
+        this.staticResourceProcessor = staticResourceProcessor;
     }
 
     @Override
@@ -35,14 +38,17 @@ public class RequestHandler extends Thread {
              DataOutputStream dos = new DataOutputStream(out)) {
             // HTTP 요청 파싱
             HttpRequest request = HttpRequestParser.parse(in);
-            HttpResponse response = requestDispatcher.dispatch(request);
+            HttpResponse response = new HttpResponse();
 
-
+            if (isStaticResource(request)) {
+                staticResourceProcessor.process(request, response);
+            } else {
+                requestDispatcher.dispatch(request, response);
+            }
 
             // 세션 ID가 없으면 새로 생성
             if (request.getCookies().getCookie("JSESSIONID") == null) {
                 response.addHeader("set-cookie", "JSESSIONID=" + UUID.randomUUID());
-
             }
 
             response.sendResponse(dos);
@@ -50,6 +56,11 @@ public class RequestHandler extends Thread {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private boolean isStaticResource(HttpRequest request) {
+        String path = request.getStartLine().getRequestUri();
+        return path.matches(".*\\.(html|css|js|png)$");
     }
 
 }
