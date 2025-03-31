@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.request.HttpRequestHeader;
 import webserver.http11.response.HttpResponse;
-
-import java.util.Map;
+import webserver.http11.session.HttpSession;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -21,7 +20,6 @@ class UserListControllerTest {
     @BeforeAll
     static void setUp() {
         DataBase.addUser(new User("user1", "password", "name1", "email1@example.com"));
-        DataBase.addUser(new User("user2", "password", "name2", "email2@example.com"));
     }
 
 
@@ -31,9 +29,11 @@ class UserListControllerTest {
         // given
         HttpRequest request = mock(HttpRequest.class);
         HttpRequestHeader header = mock(HttpRequestHeader.class);
+        HttpSession HttpSession = mock(HttpSession.class);
 
         when(request.getHeaders()).thenReturn(header);
-        when(header.getHeaders()).thenReturn(Map.of("Cookie", "logined=true"));
+        when(request.getSession()).thenReturn(HttpSession);
+        when(HttpSession.getAttribute("user")).thenReturn(new User("user1", "password","name1", "email1@example.com"));
 
         HttpResponse response = new HttpResponse();
         // when
@@ -51,9 +51,10 @@ class UserListControllerTest {
         // given
         HttpRequest request = mock(HttpRequest.class);
         HttpRequestHeader header = mock(HttpRequestHeader.class);
+        HttpSession httpSession = mock(HttpSession.class);
 
         when(request.getHeaders()).thenReturn(header);
-        when(header.getHeaders()).thenReturn(Map.of("Cookie", "logined=false"));
+        when(request.getSession()).thenReturn(httpSession);
 
         HttpResponse response = new HttpResponse();
         // when
