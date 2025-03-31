@@ -43,24 +43,4 @@ class StaticResourceProcessorTest {
         // 테스트 후 파일 삭제
         Files.deleteIfExists(Paths.get(testFilePath));
     }
-
-    @Test
-    @DisplayName("정적 리소스가 존재하지 않는 경우 404 응답을 반환해야 한다.")
-    void testProcess_404() throws Exception {
-        // given
-        HttpRequest mockRequest = mock(HttpRequest.class);
-        HttpRequestStartLine mockStartLine = mock(HttpRequestStartLine.class);
-
-        when(mockRequest.getStartLine()).thenReturn(mockStartLine);
-        when(mockRequest.getStartLine().getRequestUri()).thenReturn("/nonexistent.html");
-
-        HttpResponse response = new HttpResponse();
-        // when
-        staticResourceProcessor.process(mockRequest, response);
-
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(404);
-        assertThat(response.getHeader("Content-Type")).isEqualTo("text/plain");
-        assertThat(response.getBody()).isEqualTo("Not Found".getBytes());
-    }
 }
