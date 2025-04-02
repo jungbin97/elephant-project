@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'application'
     id "org.sonarqube" version "4.0.0.2929"
+    id 'jacoco'
 }
 
 group = 'org.nhnnext'
@@ -23,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.guava:guava:32.0.1-jre'
     implementation 'ch.qos.logback:logback-classic:1.4.12'
 
     testImplementation 'org.assertj:assertj-core:3.26.0'
@@ -32,14 +33,50 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
+jacoco {
+    // JaCoCo 버전
+    toolVersion = '0.8.8'
+}
+
+test {
+    useJUnitPlatform()
+    jacoco {
+        destinationFile = layout.buildDirectory.file('jacoco/jacocoTest.exec').get().asFile
+    }
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required= true
+        xml.required = true
+        csv.required = false
+        html.outputLocation= layout.buildDirectory.dir('jacocoHtml')
+        xml.outputLocation= layout.buildDirectory.file('jacoco.xml')
+    }
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = false
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
+        }
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
 tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
