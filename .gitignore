@@ -38,6 +38,7 @@ hs_err_pid*
 
 # Generated files
 .idea/**/contentModel.xml
+.idea/**/contentModel.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -128,6 +129,7 @@ $RECYCLE.BIN/
 .gradle
 **/build/
 !src/**/build/
+gradle.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
