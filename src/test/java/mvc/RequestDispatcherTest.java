@@ -9,7 +9,7 @@ import webserver.http11.response.HttpResponse;
 
 import static org.mockito.Mockito.*;
 
-class RequestDispatcherTest {
+class DispatcherServletTest {
 
     @Test
     @DisplayName("요청 URI에 따라 적절한 Controller에 요청을 전달해야 한다.")
