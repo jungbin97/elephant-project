@@ -1,4 +1,4 @@
-package webserver.processor;
+package webserver.staticresource;
 
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class StaticResourceProcessor {
+public class DefaultServlet {
     private static final String STATIC_RESOURCE_PATH = "./webapp";
 
-    public void process(HttpRequest request, HttpResponse httpResponse) throws IOException {
+    public void service(HttpRequest request, HttpResponse response) throws IOException {
 
         String path = request.getStartLine().getRequestUri();
         String fullPath = STATIC_RESOURCE_PATH + (path.startsWith("/") ? path : "/" + path);
@@ -19,9 +19,9 @@ public class StaticResourceProcessor {
             byte[] fileBytes = Files.readAllBytes(Paths.get(fullPath));
             String mimeType = getMimeType(path);
 
-            httpResponse.setStatusCode(200);
-            httpResponse.setHeader("Content-Type", mimeType);
-            httpResponse.setBody(fileBytes);
+            response.setStatusCode(200);
+            response.setHeader("Content-Type", mimeType);
+            response.setBody(fileBytes);
         }
     }
 

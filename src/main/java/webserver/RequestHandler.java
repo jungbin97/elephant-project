@@ -6,7 +6,7 @@ import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 import webserver.processor.DispatcherServlet;
-import webserver.processor.StaticResourceProcessor;
+import webserver.staticresource.DefaultServlet;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -20,12 +20,12 @@ public class RequestHandler extends Thread {
 
     private final Socket connection;
     private final DispatcherServlet dispatcherServlet;
-    private final StaticResourceProcessor staticResourceProcessor;
+    private final DefaultServlet defaultServlet;
 
-    public RequestHandler(Socket connectionSocket, DispatcherServlet dispatcherServlet, StaticResourceProcessor staticResourceProcessor) {
+    public RequestHandler(Socket connectionSocket, DispatcherServlet dispatcherServlet, DefaultServlet defaultServlet) {
         this.connection = connectionSocket;
         this.dispatcherServlet = dispatcherServlet;
-        this.staticResourceProcessor = staticResourceProcessor;
+        this.defaultServlet = defaultServlet;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class RequestHandler extends Thread {
             HttpResponse response = new HttpResponse();
 
             if (isStaticResource(request)) {
-                staticResourceProcessor.process(request, response);
+                defaultServlet.service(request, response);
             } else {
                 dispatcherServlet.service(request, response);
             }
