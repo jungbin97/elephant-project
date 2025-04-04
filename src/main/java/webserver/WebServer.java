@@ -2,7 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.servlet.DispatcherServlet;
+import mvc.DispatcherServlet;
 import webserver.staticresource.DefaultServlet;
 
 import java.net.ServerSocket;

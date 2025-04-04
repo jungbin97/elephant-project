@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
-import webserver.servlet.DispatcherServlet;
+import mvc.DispatcherServlet;
 import webserver.staticresource.DefaultServlet;
 
 import java.io.DataOutputStream;

@@ -2,12 +2,13 @@ package webserver.staticresource;
 
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.servlet.HttpServlet;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class DefaultServlet {
+public class DefaultServlet extends HttpServlet {
     private static final String STATIC_RESOURCE_PATH = "./webapp";
 
     public void service(HttpRequest request, HttpResponse response) throws IOException {

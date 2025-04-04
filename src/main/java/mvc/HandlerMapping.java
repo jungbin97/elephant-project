@@ -1,4 +1,4 @@
-package webserver.servlet;
+package mvc;
 
 import mvc.controller.Controller;
 import mvc.controller.LoginController;

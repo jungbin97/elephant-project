@@ -1,10 +1,11 @@
-package webserver.servlet;
+package mvc;
 
 import mvc.controller.Controller;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.servlet.HttpServlet;
 
-public class DispatcherServlet {
+public class DispatcherServlet extends HttpServlet {
     private final HandlerMapping handlerMapping = new HandlerMapping();
 
     public void service(HttpRequest request, HttpResponse response) {
