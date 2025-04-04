@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 public class DefaultServlet extends HttpServlet {
     private static final String STATIC_RESOURCE_PATH = "./webapp";
 
+    @Override
     public void service(HttpRequest request, HttpResponse response) throws IOException {
 
         String path = request.getStartLine().getRequestUri();
