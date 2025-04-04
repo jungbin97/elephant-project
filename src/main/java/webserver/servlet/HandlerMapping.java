@@ -1,9 +1,9 @@
-package webserver.processor;
+package webserver.servlet;
 
-import webserver.controller.Controller;
-import webserver.controller.LoginController;
-import webserver.controller.UserController;
-import webserver.controller.UserListController;
+import mvc.controller.Controller;
+import mvc.controller.LoginController;
+import mvc.controller.UserController;
+import mvc.controller.UserListController;
 
 import java.util.HashMap;
 import java.util.Map;

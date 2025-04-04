@@ -1,4 +1,4 @@
-package webserver.controller;
+package mvc.controller;
 
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;

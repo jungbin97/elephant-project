@@ -1,6 +1,6 @@
-package webserver.processor;
+package webserver.servlet;
 
-import webserver.controller.Controller;
+import mvc.controller.Controller;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 
