@@ -4,10 +4,10 @@ import webserver.controller.Controller;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 
-public class RequestDispatcher {
+public class DispatcherServlet {
     private final HandlerMapping handlerMapping = new HandlerMapping();
 
-    public void dispatch(HttpRequest request, HttpResponse response) {
+    public void service(HttpRequest request, HttpResponse response) {
         Controller controller = handlerMapping.getController(request.getStartLine().getRequestUri());
 
         if (controller != null) {

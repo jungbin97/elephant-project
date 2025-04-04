@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
-import webserver.processor.RequestDispatcher;
+import webserver.processor.DispatcherServlet;
 import webserver.processor.StaticResourceProcessor;
 
 import java.io.DataOutputStream;
@@ -19,12 +19,12 @@ public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final RequestDispatcher requestDispatcher;
+    private final DispatcherServlet dispatcherServlet;
     private final StaticResourceProcessor staticResourceProcessor;
 
-    public RequestHandler(Socket connectionSocket, RequestDispatcher requestDispatcher, StaticResourceProcessor staticResourceProcessor) {
+    public RequestHandler(Socket connectionSocket, DispatcherServlet dispatcherServlet, StaticResourceProcessor staticResourceProcessor) {
         this.connection = connectionSocket;
-        this.requestDispatcher = requestDispatcher;
+        this.dispatcherServlet = dispatcherServlet;
         this.staticResourceProcessor = staticResourceProcessor;
     }
 
@@ -43,7 +43,7 @@ public class RequestHandler extends Thread {
             if (isStaticResource(request)) {
                 staticResourceProcessor.process(request, response);
             } else {
-                requestDispatcher.dispatch(request, response);
+                dispatcherServlet.service(request, response);
             }
 
             // 세션 ID가 없으면 새로 생성
