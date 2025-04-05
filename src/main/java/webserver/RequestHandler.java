@@ -1,31 +1,31 @@
 package webserver;
 
+import mvc.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
-import webserver.processor.RequestDispatcher;
-import webserver.processor.StaticResourceProcessor;
+import webserver.http11.session.HttpSession;
+import webserver.staticresource.DefaultServlet;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.UUID;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final RequestDispatcher requestDispatcher;
-    private final StaticResourceProcessor staticResourceProcessor;
+    private final DispatcherServlet dispatcherServlet;
+    private final DefaultServlet defaultServlet;
 
-    public RequestHandler(Socket connectionSocket, RequestDispatcher requestDispatcher, StaticResourceProcessor staticResourceProcessor) {
+    public RequestHandler(Socket connectionSocket, DispatcherServlet dispatcherServlet, DefaultServlet defaultServlet) {
         this.connection = connectionSocket;
-        this.requestDispatcher = requestDispatcher;
-        this.staticResourceProcessor = staticResourceProcessor;
+        this.dispatcherServlet = dispatcherServlet;
+        this.defaultServlet = defaultServlet;
     }
 
     @Override
@@ -41,16 +41,16 @@ public class RequestHandler extends Thread {
             HttpResponse response = new HttpResponse();
 
             if (isStaticResource(request)) {
-                staticResourceProcessor.process(request, response);
+                defaultServlet.service(request, response);
             } else {
-                requestDispatcher.dispatch(request, response);
+                dispatcherServlet.service(request, response);
             }
 
-            // 세션 ID가 없으면 새로 생성
-            if (request.getCookies().getCookie("JSESSIONID") == null) {
-                response.addHeader("set-cookie", "JSESSIONID=" + UUID.randomUUID());
+            // 세션이 실제 생성된 경우에만 Set-Cookie 내려줌
+            HttpSession session = request.getSession(false);
+            if (session != null && request.isNewSession()) {
+                response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly");
             }
-
             response.sendResponse(dos);
 
         } catch (IOException e) {

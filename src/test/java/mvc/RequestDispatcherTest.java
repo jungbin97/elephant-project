@@ -1,4 +1,4 @@
-package webserver.processor;
+package mvc;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,13 +9,13 @@ import webserver.http11.response.HttpResponse;
 
 import static org.mockito.Mockito.*;
 
-class RequestDispatcherTest {
+class DispatcherServletTest {
 
     @Test
     @DisplayName("요청 URI에 따라 적절한 Controller에 요청을 전달해야 한다.")
     void dispatcherToController() throws Exception {
         // given
-        RequestDispatcher requestDispatcher = new RequestDispatcher();
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();
         HttpRequest mockRequest = mock(HttpRequest.class);
         HttpRequestStartLine mockStartLine = mock(HttpRequestStartLine.class);
 
@@ -24,7 +24,7 @@ class RequestDispatcherTest {
         HttpResponse response = new HttpResponse();
 
         // when
-        requestDispatcher.dispatch(mockRequest, response);
+        dispatcherServlet.service(mockRequest, response);
 
         // then
         Assertions.assertThat(response.getStatusCode()).isEqualTo(302);

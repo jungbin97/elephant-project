@@ -1,7 +1,7 @@
-package webserver.controller;
+package mvc.controller;
 
-import db.DataBase;
-import model.User;
+import mvc.db.DataBase;
+import mvc.model.User;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 import webserver.http11.session.HttpSession;

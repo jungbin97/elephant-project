@@ -1,10 +1,11 @@
-package webserver.processor;
+package webserver.servlet;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.request.HttpRequestStartLine;
 import webserver.http11.response.HttpResponse;
+import webserver.staticresource.DefaultServlet;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,12 +15,12 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class StaticResourceProcessorTest {
-    private final StaticResourceProcessor staticResourceProcessor = new StaticResourceProcessor();
+class DefaultServletTest {
+    private final DefaultServlet defaultServlet = new DefaultServlet();
 
     @Test
     @DisplayName("정적 리소스가 존재 하는 경우 200 응답을 반환해야 한다.")
-    void testProcess_200() throws IOException {
+    void testService_200() throws IOException {
         // given
         HttpRequest mockRequest = mock(HttpRequest.class);
         HttpRequestStartLine mockStartLine = mock(HttpRequestStartLine.class);
@@ -33,7 +34,7 @@ class StaticResourceProcessorTest {
 
         HttpResponse response = new HttpResponse();
         // when
-        staticResourceProcessor.process(mockRequest, response);
+        defaultServlet.service(mockRequest, response);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(200);

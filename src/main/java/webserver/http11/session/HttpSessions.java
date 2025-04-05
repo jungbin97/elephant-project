@@ -9,14 +9,12 @@ public class HttpSessions {
     private HttpSessions() {
     }
 
-    public static HttpSession getSession(String id) {
+    public static HttpSession getSession(String id, boolean create) {
         HttpSession session = sessions.get(id);
-
-        // 없으면 세션 생성
-        if (session == null) {
+        // 만약 세션이 존재하지 않고, 세션을 생성해야 한다면
+        if (session == null && create) {
             session = new HttpSession(id);
             sessions.put(id, session);
-            return session;
         }
 
         return session;

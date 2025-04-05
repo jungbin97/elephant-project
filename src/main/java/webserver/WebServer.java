@@ -2,8 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.processor.RequestDispatcher;
-import webserver.processor.StaticResourceProcessor;
+import mvc.DispatcherServlet;
+import webserver.staticresource.DefaultServlet;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,7 +28,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                RequestHandler requestHandler = new RequestHandler(connection, new RequestDispatcher(), new StaticResourceProcessor());
+                RequestHandler requestHandler = new RequestHandler(connection, new DispatcherServlet(), new DefaultServlet());
                 requestHandler.start();
             }
         }

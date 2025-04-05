@@ -13,10 +13,10 @@ class HttpSessionTest {
         String sessionId = "test";
 
         // when
-        HttpSessions.getSession(sessionId);
+        HttpSessions.getSession(sessionId, true);
 
         // then
-        assertThat(HttpSessions.getSession(sessionId)).isNotNull();
+        assertThat(HttpSessions.getSession(sessionId, true)).isNotNull();
     }
 
 
@@ -29,7 +29,7 @@ class HttpSessionTest {
         String attributeValue = "user123";
 
         // when
-        HttpSession session = HttpSessions.getSession(sessionId);
+        HttpSession session = HttpSessions.getSession(sessionId, true);
         session.setAttribute(attributeName, attributeValue);
 
         // then
@@ -45,7 +45,7 @@ class HttpSessionTest {
         String attributeValue = "user123";
 
         // when
-        HttpSession session = HttpSessions.getSession(sessionId);
+        HttpSession session = HttpSessions.getSession(sessionId, true);
         session.setAttribute(attributeName, attributeValue);
         session.removeAttribute(attributeName);
 

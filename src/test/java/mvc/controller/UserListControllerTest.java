@@ -1,7 +1,7 @@
-package webserver.controller;
+package mvc.controller;
 
-import db.DataBase;
-import model.User;
+import mvc.db.DataBase;
+import mvc.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

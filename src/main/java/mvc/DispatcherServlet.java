@@ -1,13 +1,15 @@
-package webserver.processor;
+package mvc;
 
-import webserver.controller.Controller;
+import mvc.controller.Controller;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.servlet.HttpServlet;
 
-public class RequestDispatcher {
+public class DispatcherServlet extends HttpServlet {
     private final HandlerMapping handlerMapping = new HandlerMapping();
 
-    public void dispatch(HttpRequest request, HttpResponse response) {
+    @Override
+    public void service(HttpRequest request, HttpResponse response) {
         Controller controller = handlerMapping.getController(request.getStartLine().getRequestUri());
 
         if (controller != null) {
