@@ -4,12 +4,17 @@ import webserver.http11.session.HttpSession;
 import webserver.http11.session.HttpSessions;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class HttpRequest {
     private final HttpRequestStartLine startLine;
     private final HttpRequestHeader headers;
     private final HttpRequestBody body;
     private final Map<String, String> queryParameters;
+
+    private HttpCookie cookies;
+    private HttpSession session;
+    private boolean isNewSession = false;
 
     public HttpRequest(HttpRequestStartLine startLine, HttpRequestHeader headers, HttpRequestBody body, Map<String, String> queryParameters) {
         this.startLine = startLine;
@@ -35,11 +40,35 @@ public class HttpRequest {
     }
 
     public HttpCookie getCookies() {
-        return new HttpCookie(getHeaders().getHeaders().get("Cookie"));
+        if (cookies == null) {
+            cookies = new HttpCookie(getHeaders().getHeaders().get("Cookie"));
+        }
+        return cookies;
     }
 
     public HttpSession getSession() {
-        return HttpSessions.getSession(getCookies().getCookie("JSESSIONID"));
+        return getSession(true);
+    }
+
+    public HttpSession getSession(boolean create) {
+        if (session == null) {
+            String sessionId = getCookies().getCookie("JSESSIONID");
+            if (sessionId == null && !create) {
+                return null;
+            }
+
+            if (sessionId == null) {
+                sessionId = UUID.randomUUID().toString();
+                isNewSession = true;
+            }
+
+            session = HttpSessions.getSession(sessionId, create);
+        }
+        return session;
+    }
+
+    public boolean isNewSession() {
+        return isNewSession;
     }
 
     @Override

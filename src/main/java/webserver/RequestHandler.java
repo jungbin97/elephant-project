@@ -1,11 +1,12 @@
 package webserver;
 
+import mvc.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
-import mvc.DispatcherServlet;
+import webserver.http11.session.HttpSession;
 import webserver.staticresource.DefaultServlet;
 
 import java.io.DataOutputStream;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.UUID;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -46,11 +46,11 @@ public class RequestHandler extends Thread {
                 dispatcherServlet.service(request, response);
             }
 
-            // 세션 ID가 없으면 새로 생성
-            if (request.getCookies().getCookie("JSESSIONID") == null) {
-                response.addHeader("set-cookie", "JSESSIONID=" + UUID.randomUUID());
+            // 세션이 실제 생성된 경우에만 Set-Cookie 내려줌
+            HttpSession session = request.getSession(false);
+            if (session != null && request.isNewSession()) {
+                response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly");
             }
-
             response.sendResponse(dos);
 
         } catch (IOException e) {
