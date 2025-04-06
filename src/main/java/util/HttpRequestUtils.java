@@ -1,13 +1,13 @@
 package util;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 public final class HttpRequestUtils {
 
@@ -16,7 +16,7 @@ public final class HttpRequestUtils {
     }
 
     /**
-     * @param queryString URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
+     * @param queryString URL에서 ? 이후에 전달되는 field1=value1&amp;field2=value2 형식임
      * @return 파싱된 키-값 쌍을 담은 Map
      */
     public static Map<String, String> parseQueryString(String queryString) {
