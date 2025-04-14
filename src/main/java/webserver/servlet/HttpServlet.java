@@ -11,7 +11,19 @@ import java.io.IOException;
  * 추상 클래스로, 서블릿을 구현하는 클래스는 이 클래스를 상속받아
  * doGet() 및 doPost() 메서드를 구현해야 합니다.
  */
-public abstract class HttpServlet {
+public abstract class HttpServlet implements Servlet {
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+    @Override
     public void service(HttpRequest request, HttpResponse response) throws IOException {
         String method = request.getStartLine().getMethod();
 
