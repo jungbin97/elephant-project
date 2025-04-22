@@ -1,7 +1,5 @@
 package webserver.container;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,7 +36,12 @@ import java.util.Map;
  * @see HttpServlet
  */
 public class ContextConfig {
-    private static final Logger log = LoggerFactory.getLogger(ContextConfig.class);
+    public static final String SERVLET = "servlet";
+    public static final String SERVLET_NAME = "servlet-name";
+    public static final String SERVLET_CLASS = "servlet-class";
+    public static final String LOAD_ON_STARTUP = "load-on-startup";
+    public static final String URL_PATTERN = "url-pattern";
+    public static final String SERVLET_MAPPING = "servlet-mapping";
 
     private final StandardContext standardContext;
 
@@ -55,16 +58,16 @@ public class ContextConfig {
             document.getDocumentElement().normalize();
 
             Map <String, List<String>> servletNameToClass = new HashMap<>();
-            NodeList servletNodes = document.getElementsByTagName("servlet");
+            NodeList servletNodes = document.getElementsByTagName(SERVLET);
 
             for (int i = 0; i < servletNodes.getLength(); i++) {
                 Element servletElement = (Element) servletNodes.item(i);
-                String servletName = servletElement.getElementsByTagName("servlet-name").item(0).getTextContent();
-                String servletClass = servletElement.getElementsByTagName("servlet-class").item(0).getTextContent();
+                String servletName = servletElement.getElementsByTagName(SERVLET_NAME).item(0).getTextContent();
+                String servletClass = servletElement.getElementsByTagName(SERVLET_CLASS).item(0).getTextContent();
 
                 // Default value lazy loading
                 String loadOnStartUp = "-1";
-                NodeList loadOnStartupNode = servletElement.getElementsByTagName("load-on-startup");
+                NodeList loadOnStartupNode = servletElement.getElementsByTagName(LOAD_ON_STARTUP);
                 if (loadOnStartupNode.getLength() > 0) {
                     loadOnStartUp = loadOnStartupNode.item(0).getTextContent();
                 }
@@ -72,11 +75,11 @@ public class ContextConfig {
                 servletNameToClass.put(servletName, List.of(servletClass, loadOnStartUp));
             }
 
-            NodeList mappingNodes = document.getElementsByTagName("servlet-mapping");
+            NodeList mappingNodes = document.getElementsByTagName(SERVLET_MAPPING);
             for (int i = 0; i < mappingNodes.getLength(); i++) {
                 Element mappingElement = (Element) mappingNodes.item(i);
-                String servletName = mappingElement.getElementsByTagName("servlet-name").item(0).getTextContent();
-                String urlPattern = mappingElement.getElementsByTagName("url-pattern").item(0).getTextContent();
+                String servletName = mappingElement.getElementsByTagName(SERVLET_NAME).item(0).getTextContent();
+                String urlPattern = mappingElement.getElementsByTagName(URL_PATTERN).item(0).getTextContent();
                 String servletClass = servletNameToClass.get(servletName).get(0);
                 int loadOnStartUp = Integer.parseInt(servletNameToClass.get(servletName).get(1));
 
