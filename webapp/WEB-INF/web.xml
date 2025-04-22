@@ -1,0 +1,12 @@
+<web-app>
+    <servlet>
+        <servlet-name>HelloServlet</servlet-name>
+        <servlet-class>webserver.servlet.HelloServlet</servlet-class>
+        <load-on-startup>-1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HelloServlet</servlet-name>
+        <url-pattern>/Hello</url-pattern>
+    </servlet-mapping>
+</web-app>
