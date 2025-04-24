@@ -2,8 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import mvc.DispatcherServlet;
-import webserver.staticresource.DefaultServlet;
+import webserver.container.ContextConfig;
+import webserver.container.StandardContext;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,6 +11,7 @@ import java.net.Socket;
 public class WebServer {
     private static final Logger log = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
+    public static final String WEBAPP_WEB_INF_WEB_XML = "webapp/WEB-INF/web.xml";
 
     public static void main(String[] args) throws Exception {
         int port = 0;
@@ -20,7 +21,18 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
-        // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
+        StandardContext standardContext = new StandardContext();
+        // 기본 서블릿 등록: web.xml에 등록된 서블릿 등록
+        ContextConfig contextConfig = new ContextConfig(standardContext);
+        contextConfig.parseWebXml(WEBAPP_WEB_INF_WEB_XML);
+
+        // eager 초기화
+        standardContext.loadOnStartup();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Web Application Server shutdown.");
+            standardContext.destroyAll();
+        }));
 
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             log.info("Web Application Server started {} port.", port);
@@ -28,7 +40,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                RequestHandler requestHandler = new RequestHandler(connection, new DispatcherServlet(), new DefaultServlet());
+                RequestHandler requestHandler = new RequestHandler(connection, standardContext);
                 requestHandler.start();
             }
         }
