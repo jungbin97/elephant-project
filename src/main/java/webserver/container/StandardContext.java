@@ -5,17 +5,14 @@ import org.slf4j.LoggerFactory;
 import webserver.servlet.HttpServlet;
 import webserver.servlet.Servlet;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * {@code StandardContext}는 웹 애플리케이션의 내에서 서블릿의 관리 및 생명 주기를 담당합니다.
  * <p>
  * <h2>기능</h2>
  * <ul>
- *     <li>서블릿의 컨텍스트에 등록, 검색, 초기 로딩 및 소멸을 처리합니다.</li>
+ *     <li>서블릿의 컨텍스트에 등록, 초기 로딩 및 소멸을 처리합니다.</li>
  * </ul>
  * @see StandardWrapper
  * @see HttpServlet
@@ -44,15 +41,6 @@ public class StandardContext {
     }
 
     /**
-     *  이 컨텍스트 내에 등록된 서블릿을 검색합니다.
-     * @param urlPattern 검색할 URL 패턴입니다.
-     * @return 해당 URL 패턴에 대한 서블릿 래퍼입니다. 없으면 null을 반환합니다.
-     */
-    public StandardWrapper findChild(String urlPattern) {
-        return children.get(urlPattern);
-    }
-
-    /**
      *  웹 애플리케이션 시작 시점에 load-on-startup이 0 또는 양수인 서블릿을 로드합니다.
      *  loadOnStartup이 0 또는 양수인 서블릿만 로드됩니다.
      */
@@ -70,5 +58,13 @@ public class StandardContext {
      */
     public void destroyAll() {
         children.values().forEach(StandardWrapper::destroy);
+    }
+
+    /**
+     *  이 컨텍스트 내에 등록된 모든 서블릿을 반환합니다.
+     * @return 이 컨텍스트 내에 등록된 서블릿의 Map입니다.
+     */
+    public Map<String, StandardWrapper> getServletMapings() {
+        return Collections.unmodifiableMap(children);
     }
 }
