@@ -26,20 +26,19 @@ public class Mapper {
     }
 
     public StandardWrapper getStandardWrapper(String uri) {
+        // 1. Exact match
+        StandardWrapper exactMatch = servletMappings.get(uri);
+        if (exactMatch != null) return exactMatch;
+
+        // 나머지 탐색 순회
         StandardWrapper prefixMatch = null;
         StandardWrapper extensionMatch = null;
         StandardWrapper defaultMatch = null;
         int longest = -1;
 
-        // TODO: O(n) 시간 복잡도, 개선 자료구조 생각하기
         for (Map.Entry<String, StandardWrapper> entry : servletMappings.entrySet()) {
             String pattern = entry.getKey();
             StandardWrapper wrapper = entry.getValue();
-
-            // 1. Exact match
-            if (pattern.equals(uri)) {
-                return wrapper;
-            }
 
             // 2. Prefix match (가장 긴 prefix 우선)
             if (pattern.endsWith("/*")) {
