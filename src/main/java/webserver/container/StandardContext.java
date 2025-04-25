@@ -16,12 +16,14 @@ import java.util.*;
  * </ul>
  * @see StandardWrapper
  * @see HttpServlet
+ * @see Mapper
  * @author  jungbin97
  */
 public class StandardContext {
     private static final Logger log = LoggerFactory.getLogger(StandardContext.class);
     private final Map<String, StandardWrapper> children = new HashMap<>();
     private final List<StandardWrapper> loadOnStartupWrappers = new ArrayList<>();
+    private Mapper mapper;
 
     /**
      *  이 컨텍스트 내에 새로운 서블릿을 등록합니다.
@@ -43,12 +45,14 @@ public class StandardContext {
     /**
      *  웹 애플리케이션 시작 시점에 load-on-startup이 0 또는 양수인 서블릿을 로드합니다.
      *  loadOnStartup이 0 또는 양수인 서블릿만 로드됩니다.
+     *  이 시점에 Mapper도 초기화합니다.
      */
     public void loadOnStartup() {
         log.info("eager loading servlets");
         for (StandardWrapper wrapper : loadOnStartupWrappers) {
             wrapper.load();
         }
+        this.mapper = new Mapper(children);
     }
 
     /**
@@ -66,5 +70,13 @@ public class StandardContext {
      */
     public Map<String, StandardWrapper> getServletMapings() {
         return Collections.unmodifiableMap(children);
+    }
+
+    /**
+     * 이 컨텍스트에 등록된 Mapper를 반환합니다.
+     * @return 요청 URI 매핑을 처리하는 Mapper입니다.
+     */
+    public Mapper getMapper() {
+        return mapper;
     }
 }

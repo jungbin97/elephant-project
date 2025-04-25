@@ -40,7 +40,7 @@ public class RequestHandler extends Thread {
             HttpResponse response = new HttpResponse();
 
             // 요청 URI에 해당하는 서블릿을 찾기 위해 매핑을 확인
-            Mapper mapper = new Mapper(standardContext.getServletMapings());
+            Mapper mapper = standardContext.getMapper();
             StandardWrapper wrapper = mapper.getStandardWrapper(request.getStartLine().getRequestUri());
 
             if (wrapper != null) {
