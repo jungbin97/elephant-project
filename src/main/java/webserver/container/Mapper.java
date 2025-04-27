@@ -17,7 +17,7 @@ import java.util.Map;
  *             <li>확장자 매칭(Extension Match) (예: *.jsp)</li>
  *             <li>기본 매칭(Default Match) (예: /)</li>
  *         </ul>
- *
+ * @author jungbin97
  */
 public class Mapper {
     private final Map<String, StandardWrapper> exactMappings;
