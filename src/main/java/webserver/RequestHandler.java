@@ -1,13 +1,14 @@
 package webserver;
 
-import mvc.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.container.Mapper;
+import webserver.container.StandardContext;
+import webserver.container.StandardWrapper;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
 import webserver.http11.session.HttpSession;
-import webserver.staticresource.DefaultServlet;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,13 +20,11 @@ public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final DispatcherServlet dispatcherServlet;
-    private final DefaultServlet defaultServlet;
+    private final StandardContext standardContext;
 
-    public RequestHandler(Socket connectionSocket, DispatcherServlet dispatcherServlet, DefaultServlet defaultServlet) {
+    public RequestHandler(Socket connectionSocket, StandardContext standardContext) {
         this.connection = connectionSocket;
-        this.dispatcherServlet = dispatcherServlet;
-        this.defaultServlet = defaultServlet;
+        this.standardContext = standardContext;
     }
 
     @Override
@@ -40,10 +39,12 @@ public class RequestHandler extends Thread {
             HttpRequest request = HttpRequestParser.parse(in);
             HttpResponse response = new HttpResponse();
 
-            if (isStaticResource(request)) {
-                defaultServlet.service(request, response);
-            } else {
-                dispatcherServlet.service(request, response);
+            // 요청 URI에 해당하는 서블릿을 찾기 위해 매핑을 확인
+            Mapper mapper = standardContext.getMapper();
+            StandardWrapper wrapper = mapper.getStandardWrapper(request.getStartLine().getRequestUri());
+
+            if (wrapper != null) {
+                wrapper.service(request, response);
             }
 
             // 세션이 실제 생성된 경우에만 Set-Cookie 내려줌
@@ -56,11 +57,6 @@ public class RequestHandler extends Thread {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-    }
-
-    private boolean isStaticResource(HttpRequest request) {
-        String path = request.getStartLine().getRequestUri();
-        return path.matches(".*\\.(html|css|js|png)$");
     }
 
 }

@@ -14,6 +14,39 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@code HttpRequestParser}는 HTTP 요청(InputStream)을 분석하여 {@link HttpRequest} 객체로 변환하는 유틸리티 클래스입니다.
+ *
+ * <p>주요 파싱 대상:</p>
+ * <ul>
+ *     <li>요청 시작줄 (HTTP Method, URI, Version)</li>
+ *     <li>요청 헤더</li>
+ *     <li>요청 바디</li>
+ *     <li>쿼리 파라미터 (GET, POST 공통)</li>
+ * </ul>
+ *
+ * <h2>동작 방식</h2>
+ * <ol>
+ *     <li>입력 스트림에서 요청 시작 줄을 읽고, {@link HttpRequestStartLine} 객체를 생성합니다.</li>
+ *     <li>이후 헤더 라인을 순차적으로 읽어 {@link HttpRequestHeader}로 구성합니다.</li>
+ *     <li>헤더에 {@code Content-Length}가 있는 경우, 바디를 해당 길이만큼 읽습니다.</li>
+ *     <li>헤더의 {@code Content-Type}이 {@code application/x-www-form-urlencoded}일 경우, 바디 내용을 파싱하여 쿼리 파라미터로 추가합니다.</li>
+ *     <li>파싱 결과를 바탕으로 최종적으로 {@link HttpRequest} 객체를 생성하여 반환합니다.</li>
+ * </ol>
+ *
+ * <h3>예외 처리</h3>
+ * 다음과 같은 경우 {@link IOException}을 발생시킵니다:
+ * <ul>
+ *     <li>요청 라인이 null이거나 비어있는 경우</li>
+ *     <li>헤더 형식이 잘못된 경우 (콜론 누락, 이름에 공백 포함 등)</li>
+ * </ul>
+ *
+ * @see HttpRequest
+ * @see HttpRequestStartLine
+ * @see HttpRequestHeader
+ * @see HttpRequestBody
+ * @author jungbin97
+ */
 public class HttpRequestParser {
     private static final Logger log = LoggerFactory.getLogger(HttpRequestParser.class);
     private static final String CONTENT_LENGTH = "Content-Length";
