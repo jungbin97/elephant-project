@@ -1,8 +1,30 @@
 <web-app>
+    <!-- DefaultServlet 등록 -->
+    <servlet>
+        <servlet-name>DefaultServlet</servlet-name>
+        <servlet-class>webserver.staticresource.DefaultServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DefaultServlet</servlet-name>
+        <url-pattern>/default</url-pattern>
+    </servlet-mapping>
+
+    <!-- DispatchServlet 등록 -->
+    <servlet>
+        <servlet-name>DispatchServlet</servlet-name>
+        <servlet-class>mvc.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DispatchServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>HelloServlet</servlet-name>
         <servlet-class>webserver.servlet.HelloServlet</servlet-class>
-        <load-on-startup>-1</load-on-startup>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>

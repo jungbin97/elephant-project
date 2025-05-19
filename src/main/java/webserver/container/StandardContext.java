@@ -34,7 +34,7 @@ public class StandardContext {
      *                      음수인 경우, 서블릿 로드를 지연합니다.
      */
     public void addChild(String urlPattern, Class<? extends Servlet> servletClass, int loadOnStartup) {
-        StandardWrapper wrapper = new StandardWrapper(servletClass);
+        StandardWrapper wrapper = new StandardWrapper(servletClass, this);
         children.put(urlPattern, wrapper);
 
         if (loadOnStartup >= 0) {
