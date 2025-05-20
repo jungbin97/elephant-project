@@ -86,7 +86,8 @@ public class ContextConfig {
                 Class<?> clazz = Class.forName(servletClass);
 
                 if (HttpServlet.class.isAssignableFrom(clazz)) {
-                    standardContext.addChild(urlPattern, (Class<? extends Servlet>) clazz, loadOnStartUp);
+                    Class<? extends Servlet> servletClazz = clazz.asSubclass(Servlet.class);
+                    standardContext.addChild(urlPattern, servletClazz, loadOnStartUp);
                 }
             }
 
