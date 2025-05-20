@@ -30,7 +30,7 @@ public class HttpResponse {
     }
 
     public void sendResponse(DataOutputStream dos) throws IOException {
-        dos.writeBytes("HTTP/1.1 " + statusCode + getStatusMessage(statusCode)+"\r\n");
+        dos.writeBytes("HTTP/1.1 " + statusCode + " "+ getStatusMessage(statusCode)+"\r\n");
 
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
