@@ -6,11 +6,11 @@ import webserver.container.StandardContext;
 
 import java.io.IOException;
 
-public class BioConnector {
-    private static final Logger log = LoggerFactory.getLogger(BioConnector.class);
+public class Connector {
+    private static final Logger log = LoggerFactory.getLogger(Connector.class);
     private final ProtocolHandler protocolHandler;
 
-    public BioConnector(StandardContext context, int port) {
+    public Connector(StandardContext context, int port) {
         this.protocolHandler = new BioProtocolHandler(context, port);
     }
 

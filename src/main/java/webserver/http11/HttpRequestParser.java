@@ -64,8 +64,8 @@ public class HttpRequestParser {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.ISO_8859_1));
         String reqeustStartLine = reader.readLine();
 
-        if (reqeustStartLine == null || reqeustStartLine.isEmpty()) {
-            throw new IOException("Invalid HTTP request");
+        if (reqeustStartLine == null || reqeustStartLine.isBlank()) {
+            return null;
         }
 
         String[] requestStartLineTokens = reqeustStartLine.split(" ");
@@ -121,7 +121,7 @@ public class HttpRequestParser {
 
         HttpRequestBody httpRequestBody = new HttpRequestBody(body);
 
-        log.debug("Request : {}", new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody, queryParameters));
+        log.debug("startLine : {}", httpRequestStartLine);
         return new HttpRequest(httpRequestStartLine, httpRequestHeader, httpRequestBody, queryParameters);
     }
 }

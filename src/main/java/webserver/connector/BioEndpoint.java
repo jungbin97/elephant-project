@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BioEndpoint {
-    private final ExecutorService executor = Executors.newFixedThreadPool(100);
+    private final ExecutorService executor = Executors.newFixedThreadPool(200);
     private final StandardContext context;
     private final int port;
 

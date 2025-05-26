@@ -2,7 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.connector.BioConnector;
+import webserver.connector.Connector;
 import webserver.container.ContextConfig;
 import webserver.container.StandardContext;
 
@@ -32,7 +32,7 @@ public class WebServer {
             standardContext.destroyAll();
         }));
 
-        BioConnector connector = new BioConnector(standardContext, port);
+        Connector connector = new Connector(standardContext, port);
         connector.start();
 
         log.info("Web Application Server started.");

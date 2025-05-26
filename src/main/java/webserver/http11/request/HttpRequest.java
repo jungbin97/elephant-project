@@ -71,6 +71,11 @@ public class HttpRequest {
         return isNewSession;
     }
 
+    public boolean isKeepAlive() {
+        String connection = getHeaders().getHeaders().get("Connection");
+        return connection != null && connection.equalsIgnoreCase("keep-alive");
+    }
+
     @Override
     public String toString() {
         return "HttpRequest [startLine=" + startLine + ", header=" + headers + ", body=" + body + "]";
