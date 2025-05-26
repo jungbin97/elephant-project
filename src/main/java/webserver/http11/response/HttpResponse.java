@@ -20,7 +20,6 @@ public class HttpResponse {
 
     public void setBody(byte[] body) {
         this.body = body;
-        headers.put("Content-Length", String.valueOf(body.length));
     }
 
     public void sendRedirect(String location) {
@@ -30,13 +29,20 @@ public class HttpResponse {
     }
 
     public void sendResponse(DataOutputStream dos) throws IOException {
+        // Content-Length
+        int length = (body != null) ? body.length : 0;
+        headers.put("Content-Length", String.valueOf(length));
+
+        // Status line
         dos.writeBytes("HTTP/1.1 " + statusCode + " "+ getStatusMessage(statusCode)+"\r\n");
 
+        // Headers
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
         }
         dos.writeBytes("\r\n");
 
+        // Body
         if (body != null && body.length > 0) {
             dos.write(body, 0, body.length);
         }
