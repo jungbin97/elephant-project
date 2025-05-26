@@ -20,11 +20,12 @@ class MapperTest {
 
     @BeforeAll
     static void setUp() {
-        userWrapper = new StandardWrapper(HttpServlet.class);
-        userWildcardWrapperShort = new StandardWrapper(HttpServlet.class);
-        userWildcardWrapperLong = new StandardWrapper(HttpServlet.class);
-        WildcardWrapperExtantion = new StandardWrapper(HttpServlet.class);
-        defaultWrapper = new StandardWrapper(HttpServlet.class);
+        StandardContext standardContext = new StandardContext();
+        userWrapper = new StandardWrapper(HttpServlet.class, standardContext);
+        userWildcardWrapperShort = new StandardWrapper(HttpServlet.class, standardContext);
+        userWildcardWrapperLong = new StandardWrapper(HttpServlet.class, standardContext);
+        WildcardWrapperExtantion = new StandardWrapper(HttpServlet.class, standardContext);
+        defaultWrapper = new StandardWrapper(HttpServlet.class, standardContext);
 
         Map<String, StandardWrapper> map = new HashMap<>();
         map.put("/user", userWrapper);
