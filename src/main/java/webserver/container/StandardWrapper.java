@@ -17,9 +17,11 @@ public class StandardWrapper {
     private final Class<? extends Servlet> servletClass;
     private HttpServlet instance;
     private boolean instanceInitialized = false;
+    private StandardContext context;
 
-    public StandardWrapper(Class<? extends Servlet> servletClass) {
+    public StandardWrapper(Class<? extends Servlet> servletClass, StandardContext context) {
         this.servletClass = servletClass;
+        this.context = context;
     }
 
     public void load() {
@@ -29,6 +31,12 @@ public class StandardWrapper {
 
         try {
             instance = (HttpServlet) servletClass.getDeclaredConstructor().newInstance();
+
+            // ContextAware 인터페이스를 구현한 경우, 컨텍스트를 설정합니다.
+            if (instance instanceof ServletContextAware) {
+                ((ServletContextAware) instance).setServletContext(context);
+            }
+
             instance.init();
             instanceInitialized = true;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

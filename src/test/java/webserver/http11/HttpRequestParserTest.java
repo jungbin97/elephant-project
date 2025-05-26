@@ -32,16 +32,14 @@ class HttpRequestParserTest {
     }
 
     @Test
-    @DisplayName("잘못된 요청 라인을 파싱하면 예외가 발생해야 한다.")
-    void parseInvalidRequestLine() {
+    @DisplayName("잘못된 요청 라인을 파싱하면 null이 반환되어야 한다.")
+    void parseInvalidRequestLine() throws IOException {
         // given
         String rawRequest = "\r\n";
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // then
-        assertThatThrownBy(() -> HttpRequestParser.parse(inputstream))
-                .isInstanceOf(IOException.class)
-                .hasMessage("Invalid HTTP request");
+        assertThat(HttpRequestParser.parse(inputstream)).isNull();
     }
 
     @Test

@@ -2,21 +2,19 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.container.Mapper;
+import webserver.connector.Http11Processor;
 import webserver.container.StandardContext;
-import webserver.container.StandardWrapper;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
-import webserver.http11.session.HttpSession;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
-public class RequestHandler extends Thread {
+public class RequestHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
@@ -35,27 +33,42 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream();
              OutputStream out = connection.getOutputStream();
              DataOutputStream dos = new DataOutputStream(out)) {
-            // HTTP 요청 파싱
-            HttpRequest request = HttpRequestParser.parse(in);
-            HttpResponse response = new HttpResponse();
 
-            // 요청 URI에 해당하는 서블릿을 찾기 위해 매핑을 확인
-            Mapper mapper = standardContext.getMapper();
-            StandardWrapper wrapper = mapper.getStandardWrapper(request.getStartLine().getRequestUri());
+            // keep alive 지원
+            while (!connection.isClosed()) {
+                connection.setSoTimeout(1000); // 1초 타임아웃 설정
 
-            if (wrapper != null) {
-                wrapper.service(request, response);
+                // HTTP 요청 파싱
+                HttpRequest request = HttpRequestParser.parse(in);
+
+                if (request == null) {
+                    continue;
+                }
+
+                HttpResponse response = new HttpResponse();
+
+                Http11Processor processor = new Http11Processor(standardContext);
+                processor.process(request, response);
+
+                if (request.isKeepAlive()) {
+                    response.addHeader("Connection", "keep-alive");
+                    response.sendResponse(dos);
+                } else {
+                    response.addHeader("Connection", "close");
+                    response.sendResponse(dos);
+                    break;
+                }
             }
-
-            // 세션이 실제 생성된 경우에만 Set-Cookie 내려줌
-            HttpSession session = request.getSession(false);
-            if (session != null && request.isNewSession()) {
-                response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; Path=/; HttpOnly");
+        } catch (SocketTimeoutException e) {
+            log.info("Keep-Alive timeout, closing connection");
+        } catch (Exception e) {
+            log.error("Error processing request", e);
+        } finally {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                log.error("Error closing connection", e);
             }
-            response.sendResponse(dos);
-
-        } catch (IOException e) {
-            log.error(e.getMessage());
         }
     }
 
