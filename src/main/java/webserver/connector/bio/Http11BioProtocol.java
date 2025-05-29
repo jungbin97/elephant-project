@@ -1,11 +1,12 @@
-package webserver.connector;
+package webserver.connector.bio;
 
+import webserver.connector.ProtocolHandler;
 import webserver.container.StandardContext;
 
-public class BioProtocolHandler implements ProtocolHandler {
+public class Http11BioProtocol implements ProtocolHandler {
     private final BioEndpoint endpoint;
 
-    BioProtocolHandler(StandardContext context, int port) {
+    public Http11BioProtocol(StandardContext context, int port) {
         this.endpoint = new BioEndpoint(context, port);
     }
 

@@ -1,8 +1,7 @@
-package webserver;
+package webserver.connector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.connector.Http11Processor;
 import webserver.container.StandardContext;
 import webserver.http11.HttpRequestParser;
 import webserver.http11.request.HttpRequest;
