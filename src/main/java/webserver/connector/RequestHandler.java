@@ -16,26 +16,26 @@ import java.net.SocketTimeoutException;
 public class RequestHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
-    private final Socket connection;
+    private final Socket socket;
     private final StandardContext standardContext;
 
-    public RequestHandler(Socket connectionSocket, StandardContext standardContext) {
-        this.connection = connectionSocket;
+    public RequestHandler(Socket socket, StandardContext standardContext) {
+        this.socket = socket;
         this.standardContext = standardContext;
     }
 
     @Override
     public void run() {
-        log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        log.debug("New Client Connect! Connected IP : {}, Port : {}", socket.getInetAddress(),
+                socket.getPort());
 
-        try (InputStream in = connection.getInputStream();
-             OutputStream out = connection.getOutputStream();
+        try (InputStream in = socket.getInputStream();
+             OutputStream out = socket.getOutputStream();
              DataOutputStream dos = new DataOutputStream(out)) {
 
             // keep alive 지원
-            while (!connection.isClosed()) {
-                connection.setSoTimeout(1000); // 1초 타임아웃 설정
+            while (!socket.isClosed()) {
+                socket.setSoTimeout(1000); // 1초 타임아웃 설정
 
                 // HTTP 요청 파싱
                 HttpRequest request = HttpRequestParser.parse(in);
@@ -64,7 +64,7 @@ public class RequestHandler implements Runnable {
             log.error("Error processing request", e);
         } finally {
             try {
-                connection.close();
+                socket.close();
             } catch (Exception e) {
                 log.error("Error closing connection", e);
             }
