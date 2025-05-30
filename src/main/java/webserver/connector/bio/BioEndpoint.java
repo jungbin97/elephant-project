@@ -1,32 +1,31 @@
 package webserver.connector.bio;
 
-import webserver.connector.Acceptor;
+import webserver.connector.endpoint.AbstractEndpoint;
 import webserver.container.StandardContext;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BioEndpoint {
-    private final ExecutorService executor = Executors.newFixedThreadPool(200);
-    private final StandardContext context;
-    private final int port;
+public class BioEndpoint extends AbstractEndpoint {
+    private ExecutorService executorService;
+    private ServerSocket serverSocket;
 
-    public BioEndpoint(StandardContext context, int port) {
-        this.context = context;
-        this.port = port;
+    @Override
+    protected void bindInternal() throws Exception {
+        serverSocket = new ServerSocket(port);
+        executorService = Executors.newFixedThreadPool(200);
     }
 
-    public void start() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            BioConnectionHandler handler = new BioConnectionHandler(context);
-            Thread acceptor = new Thread(new Acceptor(serverSocket, executor, handler));
-            acceptor.start();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    protected void startInternal(StandardContext context) throws Exception {
+        Thread acceptor = new Thread(new BioAcceptor(serverSocket, executorService, context));
+        acceptor.start();
     }
 
+    @Override
+    protected void stopInternal() throws Exception {
+        serverSocket.close();
+        executorService.shutdown();
+    }
 }
