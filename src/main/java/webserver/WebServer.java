@@ -3,7 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.connector.Connector;
-import webserver.connector.bio.Http11BioProtocol;
+import webserver.connector.nio.Http11NioProtocol;
 import webserver.connector.protocol.ProtocolHandler;
 import webserver.container.ContextConfig;
 import webserver.container.StandardContext;
@@ -24,7 +24,8 @@ public class WebServer {
         standardContext.loadOnStartup();
 
         // 2. 프로토콜 핸들러 선택
-        ProtocolHandler handler = new Http11BioProtocol(DEFAULT_PORT);
+        ProtocolHandler handler = new Http11NioProtocol(DEFAULT_PORT);
+//        ProtocolHandler handler = new Http11BioProtocol(DEFAULT_PORT);
 
         // 3. Connector 구성
         Connector connector = new Connector(handler, standardContext);
