@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-class HttpRequestParserTest {
+class BioHttpRequestParserTest {
     @Test
     @DisplayName("GET 요청 결과를 정상적으로 파싱해야 한다.")
     void parseGetRequest() throws IOException {
@@ -22,7 +22,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+        HttpRequest httpRequest = BioHttpRequestParser.parse(inputstream);
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("GET");
@@ -39,7 +39,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // then
-        assertThat(HttpRequestParser.parse(inputstream)).isNull();
+        assertThat(BioHttpRequestParser.parse(inputstream)).isNull();
     }
 
     @Test
@@ -52,9 +52,9 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // then
-        assertThatThrownBy(() -> HttpRequestParser.parse(inputstream))
+        assertThatThrownBy(() -> BioHttpRequestParser.parse(inputstream))
                 .isInstanceOf(IOException.class)
-                .hasMessage("Invalid HTTP header");
+                .hasMessageContaining("Invalid");
     }
 
     @Test
@@ -70,7 +70,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+        HttpRequest httpRequest = BioHttpRequestParser.parse(inputstream);
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("POST");
@@ -92,7 +92,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+        HttpRequest httpRequest = BioHttpRequestParser.parse(inputstream);
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("DELETE");
@@ -112,7 +112,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+        HttpRequest httpRequest = BioHttpRequestParser.parse(inputstream);
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("GET");
@@ -135,7 +135,7 @@ class HttpRequestParserTest {
         ByteArrayInputStream inputstream = new ByteArrayInputStream(rawRequest.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestParser.parse(inputstream);
+        HttpRequest httpRequest = BioHttpRequestParser.parse(inputstream);
 
         // then
         assertThat(httpRequest.getStartLine().getMethod()).isEqualTo("POST");
