@@ -41,7 +41,7 @@ public class NioHttpRequestParser {
         // buffer 8kb
         buffer.flip();
         while (buffer.hasRemaining()) {
-            Byte b = buffer.get(); // 버퍼에서 바이트 읽기
+            byte b = buffer.get(); // 버퍼에서 바이트 읽기
             char c = (char) (b & 0xFF); // 바이트를 char로 변환
             currentLine.append(c);
 
