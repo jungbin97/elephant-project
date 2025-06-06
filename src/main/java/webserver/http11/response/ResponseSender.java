@@ -46,7 +46,7 @@ public class ResponseSender {
         responseBuilder
                 .append("HTTP/1.1 ")
                 .append(response.getStatusCode()).append(" ")
-                .append(response.getStatusCode())
+                .append(response.getStatusMessage())
                 .append("\r\n");
 
         // Headers
