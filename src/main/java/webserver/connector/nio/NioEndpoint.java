@@ -37,7 +37,7 @@ public class NioEndpoint extends AbstractEndpoint {
         pollerPool.submit(poller);
 
         // Acceptor 시작
-        acceptor = new NioAcceptor(this, "Aceptor-1");
+        acceptor = new NioAcceptor(this, "Acceptor-1");
         new Thread(acceptor).start();
     }
 
@@ -51,7 +51,7 @@ public class NioEndpoint extends AbstractEndpoint {
         serverSocketChannel.close();
     }
 
-    public SocketChannel serverScoketAccept() throws IOException {
+    public SocketChannel serverSocketAccept() throws IOException {
         // OS 커널 플랫폼 별 버그 처리로직이 필요할 수 있습니다.
         return serverSocketChannel.accept();
     }

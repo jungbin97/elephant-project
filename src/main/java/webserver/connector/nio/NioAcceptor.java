@@ -41,7 +41,7 @@ public class NioAcceptor implements Runnable {
 
             /*---------------- accept 처리 ---------------- */
             try {
-                SocketChannel socketChannel = endpoint.serverScoketAccept();
+                SocketChannel socketChannel = endpoint.serverSocketAccept();
                 if (socketChannel == null) {
                     continue;
                 }
