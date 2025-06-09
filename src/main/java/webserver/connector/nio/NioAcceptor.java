@@ -12,15 +12,21 @@ public class NioAcceptor implements Runnable {
     private static final int INIT_ERR_DELAY = 50; // 초기 오류 지연 시간(ms)
     private static final int MAX_ERR_DELAY = 1_600; // 최대 오류 지연 시간(ms)
 
+    private final Sleeper sleeper;
     private final NioEndpoint endpoint;
     private final String name;
 
     // CPU 캐시와 메인 메모리 간의 동기화 문제를 방지하기 위해 volatile 키워드를 사용
     private volatile boolean stopped = false;
 
-    public NioAcceptor(NioEndpoint endpoint, String name) {
+    public NioAcceptor(NioEndpoint endpoint, String name, Sleeper sleeper) {
         this.endpoint = endpoint;
         this.name = name;
+        this.sleeper = sleeper;
+    }
+
+    public NioAcceptor(NioEndpoint endpoint, String name) {
+        this(endpoint, name, TimeUnit.MILLISECONDS::sleep);
     }
 
     void stop() {
@@ -62,10 +68,10 @@ public class NioAcceptor implements Runnable {
         }
     }
 
-    private static void sleepSilently(int millis) {
+    private void sleepSilently(int backoff) {
         try {
-            TimeUnit.MILLISECONDS.sleep(millis);
-        } catch (InterruptedException ignore) {
+            sleeper.sleep(backoff);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }

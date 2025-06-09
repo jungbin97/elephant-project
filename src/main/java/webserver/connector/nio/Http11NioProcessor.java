@@ -34,11 +34,6 @@ public class Http11NioProcessor implements Runnable {
         try {
             ByteBuffer buffer = wrapper.buffer;
 
-            // 경합 테스트 로그
-            if (buffer.position() > 0) {
-                log.warn("Buffer reused: position={}, limit={}", buffer.position(), buffer.limit());
-            }
-
             int bytesRead = wrapper.channel.read(buffer);
             if (bytesRead == -1) {
                 wrapper.closeChannel();
