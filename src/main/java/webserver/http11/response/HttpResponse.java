@@ -1,7 +1,5 @@
 package webserver.http11.response;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,28 +26,7 @@ public class HttpResponse {
         headers.put("Content-Length", "0");
     }
 
-    public void sendResponse(DataOutputStream dos) throws IOException {
-        // Content-Length
-        int length = (body != null) ? body.length : 0;
-        headers.put("Content-Length", String.valueOf(length));
-
-        // Status line
-        dos.writeBytes("HTTP/1.1 " + statusCode + " "+ getStatusMessage(statusCode)+"\r\n");
-
-        // Headers
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            dos.writeBytes(entry.getKey() + ": " + entry.getValue() + "\r\n");
-        }
-        dos.writeBytes("\r\n");
-
-        // Body
-        if (body != null && body.length > 0) {
-            dos.write(body, 0, body.length);
-        }
-        dos.flush();
-    }
-
-    private String getStatusMessage(int statusCode) {
+    public String getStatusMessage() {
         return switch (statusCode) {
             case 200 -> "OK";
             case 301 -> "Moved Permanently";
@@ -72,6 +49,10 @@ public class HttpResponse {
 
     public String getHeader(String key) {
         return headers.get(key);
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
     public byte[] getBody() {

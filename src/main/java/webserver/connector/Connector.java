@@ -32,18 +32,18 @@ public class Connector implements Lifecycle {
 
     @Override
     public void init() throws Exception {
-        log.info("Initializing BioConnector...");
+        log.info("Initializing ProtocolHandler...");
         protocolHandler.initProtocol();
     }
 
     public void start() throws Exception {
-        log.info("Starting BioConnector...");
+        log.info("Starting ProtocolHandler...");
         protocolHandler.startProtocol();
     }
 
     @Override
     public void stop() throws Exception {
-        log.info("Stopping BioConnector...");
+        log.info("Stopping ProtocolHandler...");
         protocolHandler.stopProtocol();
     }
 

@@ -2,7 +2,6 @@ package webserver.connector.bio;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.connector.RequestHandler;
 import webserver.container.StandardContext;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class BioAcceptor implements Runnable {
         while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
-                executorService.submit(new RequestHandler(socket, context));
+                executorService.submit(new Http11BioProcessor(socket, context));
             } catch (IOException e) {
                 // 로그에 연결 수락 중 오류를 기록
                 log.error("Error accepting connection: {}", e.getMessage());

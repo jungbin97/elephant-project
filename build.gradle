@@ -90,3 +90,7 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
+
+tasks.named('run') {
+    ignoreExitValue = true   // Ctrl-C(143), SIGTERM(130)도 성공으로 간주
+}

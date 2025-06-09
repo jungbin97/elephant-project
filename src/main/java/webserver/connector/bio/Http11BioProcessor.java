@@ -1,11 +1,13 @@
-package webserver.connector;
+package webserver.connector.bio;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.connector.Http11Processor;
 import webserver.container.StandardContext;
-import webserver.http11.HttpRequestParser;
+import webserver.http11.BioHttpRequestParser;
 import webserver.http11.request.HttpRequest;
 import webserver.http11.response.HttpResponse;
+import webserver.http11.response.ResponseSender;
 
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -13,13 +15,13 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class RequestHandler implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+public class Http11BioProcessor implements Runnable {
+    private static final Logger log = LoggerFactory.getLogger(Http11BioProcessor.class);
 
     private final Socket socket;
     private final StandardContext standardContext;
 
-    public RequestHandler(Socket socket, StandardContext standardContext) {
+    public Http11BioProcessor(Socket socket, StandardContext standardContext) {
         this.socket = socket;
         this.standardContext = standardContext;
     }
@@ -38,7 +40,7 @@ public class RequestHandler implements Runnable {
                 socket.setSoTimeout(1000); // 1초 타임아웃 설정
 
                 // HTTP 요청 파싱
-                HttpRequest request = HttpRequestParser.parse(in);
+                HttpRequest request = BioHttpRequestParser.parse(in);
 
                 if (request == null) {
                     continue;
@@ -51,10 +53,10 @@ public class RequestHandler implements Runnable {
 
                 if (request.isKeepAlive()) {
                     response.addHeader("Connection", "keep-alive");
-                    response.sendResponse(dos);
+                    ResponseSender.sendResponseBIO(response, dos);
                 } else {
                     response.addHeader("Connection", "close");
-                    response.sendResponse(dos);
+                    ResponseSender.sendResponseBIO(response, dos);
                     break;
                 }
             }
