@@ -17,38 +17,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@code ContextConfig}는 웹 애플리케이션의 설정을 파싱하는 클래스입니다.
- * web.xml 파일을 읽어 서블릿과 URL 매핑 정보를 추출하고,
- * StandardContext에 추가합니다.
- *
- * <h2>기능</h2>
- * <ul>
- *     <li> &lt;servlet&gt; 태그를 통해 servlet-name, servlet-class, load-on-startup 정보를 수집합니다.</li>
- *     <li> &lt;servlet-mapping&gt; 태그를 통해 servlet-name ,url-pattern을 정보를 수집합니다.</li>
- *     <li>서블릿을 StandardContext에 등록합니다.</li>
- *     <li>load-on-startup 에 따른 동적 클래스 로딩을 위해 StandardWrapper를 사용합니다.</li>
- *     <li>서블릿 클래스 메타 정보를 StandardWrapper에 저장합니다.</li>
- * </ul>
+ * 웹 애플리케이션의 web.xml를 파싱하여 서블릿 정보를 {@link StandardContext}에 등록하는 역할을 담당합니다.
+ * <p>
+ * 서버 시작 시점에 `web.xml`을 읽어 그 안에 정의된 서블릿과 URL 매핑 규칙을 해석하고, 컨테이너인
+ * {@code StandardContext}에 해당 정보를 추가합니다.
  *
  * @author jungbin97
  * @see StandardContext
- * @see StandardWrapper
- * @see HttpServlet
  */
 public class ContextConfig {
-    public static final String SERVLET = "servlet";
-    public static final String SERVLET_NAME = "servlet-name";
-    public static final String SERVLET_CLASS = "servlet-class";
-    public static final String LOAD_ON_STARTUP = "load-on-startup";
-    public static final String URL_PATTERN = "url-pattern";
-    public static final String SERVLET_MAPPING = "servlet-mapping";
+    private static final String SERVLET = "servlet";
+    private static final String SERVLET_NAME = "servlet-name";
+    private static final String SERVLET_CLASS = "servlet-class";
+    private static final String LOAD_ON_STARTUP = "load-on-startup";
+    private static final String URL_PATTERN = "url-pattern";
+    private static final String SERVLET_MAPPING = "servlet-mapping";
 
     private final StandardContext standardContext;
 
+    /**
+     * 지정된 {@link StandardContext}를 설정하는 생성자.
+     * 이 {@code ContextConfig}는 파싱 결과를 이 컨텍스트에 등록합니다.
+     *
+     * @param standardContext 서블릿 정보를 등록할 컨텍스트
+     */
     public ContextConfig(StandardContext standardContext) {
         this.standardContext = standardContext;
     }
 
+    /**
+     * 지정된 경로의 web.xml 파일을 파싱하고, 그 내용을 {@link StandardContext}에 적용합니다.
+     *
+     * @param path web.xml 파일의 전체 경로
+     * @throws RuntimeException 파일 파싱 또는 서블릿 클래스 로딩 중 심각한 오류가 발생했을 경우
+     */
     public void parseWebXml(String path) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
