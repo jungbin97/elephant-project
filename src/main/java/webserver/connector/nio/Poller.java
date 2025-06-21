@@ -98,7 +98,7 @@ public class Poller implements Runnable {
                 }
 
                 if (key.isWritable()) {
-                    wrapper.flushWriteBuffer(key);
+                    wrapper.processWriteQueue(key);
                 }
             } catch (Exception e) {
                 if (wrapper != null) wrapper.closeChannel();

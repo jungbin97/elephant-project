@@ -22,7 +22,7 @@ class NioSocketWrapperTest {
         SelectionKey key = mock(SelectionKey.class);
 
         // when
-        wrapper.flushWriteBuffer(key);
+        wrapper.processWriteQueue(key);
 
         // then
         verify(poller).requestSwitchToRead(key);
@@ -41,7 +41,7 @@ class NioSocketWrapperTest {
 
         // when
         wrapper.writeQueue.offer(ByteBuffer.allocate(1));
-        wrapper.flushWriteBuffer(key);
+        wrapper.processWriteQueue(key);
 
         // then
         verify(channel).close();
@@ -68,7 +68,7 @@ class NioSocketWrapperTest {
         SelectionKey key = mock(SelectionKey.class);
 
         // when
-        wrapper.flushWriteBuffer(key);
+        wrapper.processWriteQueue(key);
 
         // then
         assertThat(wrapper.writeQueue).isEmpty();
@@ -102,7 +102,7 @@ class NioSocketWrapperTest {
         when(key.interestOps()).thenReturn(0);
 
         // when
-        wrapper.flushWriteBuffer(key);
+        wrapper.processWriteQueue(key);
 
         // then
         assertThat(wrapper.writeQueue).isNotEmpty();

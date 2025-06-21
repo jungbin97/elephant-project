@@ -69,4 +69,29 @@ public class ResponseSender {
         return buffer;
     }
 
+    /**
+     * HttpResponse 객체로부터 헤더 정보만으로 구성된 ByteBuffer를 생성합니다.
+     * Zero-Copy 파일 전송 시 헤더를 먼저 보내기 위해 사용됩니다.
+     * @param response HTTP 응답 객체
+     * @return 헤더 정보가 담긴 ByteBuffer
+     */
+    public static ByteBuffer createHeaderBuffer(HttpResponse response) {
+        StringBuilder headerBuilder = new StringBuilder();
+
+        // Status line
+        headerBuilder
+                .append("HTTP/1.1 ")
+                .append(response.getStatusCode()).append(" ")
+                .append(response.getStatusMessage())
+                .append("\r\n");
+
+        // Headers
+        response.getHeaders().forEach((key, value) ->
+                headerBuilder.append(key).append(": ").append(value).append("\r\n"));
+
+        headerBuilder.append("\r\n");
+
+        return ByteBuffer.wrap(headerBuilder.toString().getBytes(StandardCharsets.ISO_8859_1));
+    }
+
 }
