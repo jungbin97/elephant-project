@@ -16,7 +16,7 @@ import java.util.UUID;
  * 세션에 데이터를 저장하거나 조회하기 위해 {@code get/set/removeAttribute} 메서드를,
  * 세션을 만료시키기 위해 {@link #invalidate()} 메서드를 사용합니다.
  *
- * @see HttpSessions
+ * @see SessionManager
  * @see HttpRequest#getSession()
  */
 public class HttpSession {
@@ -25,7 +25,7 @@ public class HttpSession {
 
     /**
      * 지정된 세션 ID로 새로운 HttpSession 객체를 생성합니다.
-     * 이 생성자는 일반적으로 {@link HttpSessions}에 의해 내부적으로 호출됩니다.
+     * 이 생성자는 일반적으로 {@link SessionManager}에 의해 내부적으로 호출됩니다.
      *
      * @param id 이 세션을 식별하는 고유한 ID (일반적으로 {@link UUID} 사용)
      */
@@ -75,10 +75,10 @@ public class HttpSession {
     /**
      * 이 세션을 무효화하고, 세션에 바인딩된 모든 데이터를 제거합니다.
      * <p>
-     * 내부적으로 {@link HttpSessions}의 정적 메서드를 호출하여
+     * 내부적으로 {@link SessionManager}의 정적 메서드를 호출하여
      * 중앙 세션 저장소에서 이 세션 객체를 제거하도록 요청합니다.
      */
     public void invalidate() {
-        HttpSessions.removeSession(id);
+        SessionManager.removeSession(id);
     }
 }

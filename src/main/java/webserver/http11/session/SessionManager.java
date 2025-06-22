@@ -17,13 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author jungbin97
  * @see HttpSession
  */
-public class HttpSessions {
+public class SessionManager {
     private static final Map<String, HttpSession> sessions = new ConcurrentHashMap<>();
 
     /**
      * 이 클래스는 유틸리티 클래스로, 인스턴스화할 수 없습니다.
      */
-    private HttpSessions() {
+    private SessionManager() {
     }
 
     /**
