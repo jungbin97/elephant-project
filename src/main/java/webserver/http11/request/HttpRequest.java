@@ -1,7 +1,7 @@
 package webserver.http11.request;
 
 import webserver.http11.session.HttpSession;
-import webserver.http11.session.HttpSessions;
+import webserver.http11.session.SessionManager;
 
 import java.util.Map;
 import java.util.UUID;
@@ -62,7 +62,7 @@ public class HttpRequest {
                 isNewSession = true;
             }
 
-            session = HttpSessions.getSession(sessionId, create);
+            session = SessionManager.getSession(sessionId, create);
         }
         return session;
     }

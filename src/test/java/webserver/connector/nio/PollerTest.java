@@ -107,7 +107,7 @@ class PollerTest {
             poller.run();
 
             // then
-            verify(wrapper).flushWriteBuffer(key);
+            verify(wrapper).processWriteQueue(key);
             verify(pool, never()).submit(any(Http11NioProcessor.class));
         }
     }

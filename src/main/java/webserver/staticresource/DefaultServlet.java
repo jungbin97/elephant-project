@@ -6,33 +6,15 @@ import webserver.servlet.HttpServlet;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * {@code DefaultServlet}는 정적 리소스를 요청을 처리하는 서블릿입니다.
- *
- * <p>
- * HTML, CSS, JavaScript, 이미지 파일 등 정적 자원을 요청 경로에 따라 읽어 HTTP 응답으로 반환합니다. <br>
- * Tomcat의 기본 정적 파일 서블릿 역할과 유사한 책임을 수행합니다.
- * </p>
- *
- * <h2>기능</h2>
- * <ul>
- *     <li>요청 URI에 해당하는 파일을 {@code ./webapp} 경로 하위에서 탐색</li>
- *     <li>존재하는 경우, MIME 타입을 설정하고 바디에 파일 데이터를 담아 응답</li>
- *     <li>지원하지 않는 확장자에 대해서는 {@code text/plain} MIME 타입으로 응답</li>
- * </ul>
- *
- * <h2>예시</h2>
- * <pre>{@code
- * GET /index.html HTTP/1.1
- *
- * → ./webapp/index.html 파일을 찾아 Content-Type: text/html 과 함께 응답
- * }</pre>
+ * {@code DefaultServlet}는 정적 리소스를 요청을 처리하는 서블릿입니다. <br>
+ * 파일을 직접 읽어 메모리에 올리는 대신, 파일의 경로(Path)와 메타데이터만 HttpResponse에 설정하여
+ * 하위 Connector 계층에서 Zero-Copy를 수행할 수 있도록 책임을 위임합니다.
  *
  * @see HttpServlet
- * @see HttpRequest
- * @see HttpResponse
  * @author jungbin97
  */
 public class DefaultServlet extends HttpServlet {
@@ -42,16 +24,28 @@ public class DefaultServlet extends HttpServlet {
     public void service(HttpRequest request, HttpResponse response) throws IOException {
 
         String path = request.getStartLine().getRequestUri();
-        String fullPath = STATIC_RESOURCE_PATH + (path.startsWith("/") ? path : "/" + path);
+        Path filePath = Paths.get(STATIC_RESOURCE_PATH + path).toAbsolutePath().normalize();
 
-        if (Files.exists(Paths.get(fullPath))) {
-            byte[] fileBytes = Files.readAllBytes(Paths.get(fullPath));
+        if (Files.isRegularFile(filePath)) {
             String mimeType = getMimeType(path);
+            long contentLength = Files.size(filePath);
 
             response.setStatusCode(200);
             response.setHeader("Content-Type", mimeType);
-            response.setBody(fileBytes);
+            response.setHeader("Content-Length", String.valueOf(contentLength));
+
+            // 파일을 직접 읽지 않고, Path 객체를 응답 본문으로 설정
+            response.setFileBody(filePath);
+        } else {
+            // 파일이 없거나 디렉토리인 경우 404 에러 응답
+            sendError(response, 404, "Not Found");
         }
+    }
+
+    private void sendError(HttpResponse response, int statusCode, String message) {
+        response.setStatusCode(statusCode);
+        response.setHeader("Content-Type", "text/plain");
+        response.setBody(message.getBytes());
     }
 
     public static String getMimeType(String requestUri) {
@@ -59,6 +53,9 @@ public class DefaultServlet extends HttpServlet {
         if (requestUri.endsWith(".css")) return "text/css";
         if (requestUri.endsWith(".js")) return "application/javascript";
         if (requestUri.endsWith(".png")) return "image/png";
+        if (requestUri.endsWith(".jpg") || requestUri.endsWith(".jpeg")) return "image/jpeg";
+        if (requestUri.endsWith(".gif")) return "image/gif";
+        if (requestUri.endsWith(".ico")) return "image/x-icon";
         return "text/plain";
     }
 }

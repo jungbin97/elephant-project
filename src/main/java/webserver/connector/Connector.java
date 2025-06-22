@@ -12,11 +12,12 @@ import webserver.lifecycle.Lifecycle;
  * <p>
  * <h2>기능</h2>
  * <ul>
- *     <li>클라이언트의 연결을 수신하고, 요청을 처리하기 위한 {@code ProtocolHandler}를 시작합니다.</li>
- *     <li>ProtocolHandler에 연결된 context를 설정합니다.</li>
- *     <li>lifecycle 메서드를 통해 초기화, 시작, 중지 및 소멸 작업을 수행합니다.</li>
+ * <li>클라이언트의 연결을 수신하고, 요청을 처리하기 위한 {@code ProtocolHandler}를 시작합니다.</li>
+ * <li>ProtocolHandler에 연결된 context를 설정합니다.</li>
+ * <li>lifecycle 메서드를 통해 초기화, 시작, 중지 및 소멸 작업을 수행합니다.</li>
  * </ul>
  *
+ * @author jungbin97
  * @see ProtocolHandler
  * @see Http11BioProtocol
  */

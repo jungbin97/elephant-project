@@ -14,6 +14,25 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * {@link Selector}를 중심으로 한 I/O 이벤트 루프를 실행하는 {@link Runnable}입니다.
+ * <p>
+ * 이 클래스는 이벤트 루프를 구현하여, 단일 스레드에서 다수의 채널(클라이언트 연결)로 부터
+ * 발생하는 I/O 이벤트를 다중화(multiplexing)하여 처리 합니다.
+ * <h2>주요 역할</h2>
+ * <ol>
+ * <li>{@link Selector#select()}를 호출하여 I/O 준비가 된 채널들을 기다립니다.</li>
+ * <li>READ 이벤트가 발생하면, 실제 데이터 읽기와 처리를 워커 스레드 풀({@code workerPool})의
+ * {@link Http11NioProcessor} 태스크로 위임합니다.</li>
+ * <li>WRITE 이벤트가 발생하면, {@link NioSocketWrapper}의 쓰기 큐에 있는 데이터를 직접 소켓에 씁니다.</li>
+ * <li>외부 스레드로부터의 채널 등록 및 관심사 변경 요청을 동기화 큐를 통해 처리합니다.</li>
+ * </ol>
+ *
+ * @author jungbin97
+ * @see Selector
+ * @see NioEndpoint
+ * @see NioSocketWrapper
+ */
 public class Poller implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(Poller.class);
 
@@ -27,6 +46,14 @@ public class Poller implements Runnable {
 
     private volatile boolean running = true;
 
+    /**
+     * 지정된 컴포넌트들로 Poller를 생성합니다.
+     *
+     * @param workerPool 요청 처리 태스크를 실행할 워커 스레드 풀
+     * @param context    서블릿 컨텍스트
+     * @param endpoint   이 Poller를 소유하는 엔드포인트
+     * @throws IOException Selector를 여는 데 실패할 경우
+     */
     public Poller(ExecutorService workerPool, StandardContext context, NioEndpoint endpoint) throws IOException {
         this.selector = Selector.open();
         this.workerPool = workerPool;
@@ -34,7 +61,14 @@ public class Poller implements Runnable {
         this.endpoint = endpoint;
     }
 
-    // Acceptor가 새 소켓을 넘길 때, 호출
+    /**
+     * 외부 스레드(주로 Acceptor)에서 새로운 소켓 채널을 이 Poller의 Selector에 등록하도록 요청합니다.
+     * <p>
+     * 실제 등록 작업은 스레드 안전성을 위해 이벤트 큐에 작업을 추가하고 {@link Selector#wakeup()}을 호출하여
+     * Poller의 이벤트 루프 내에서 실행되도록 합니다.
+     *
+     * @param ch 새로 등록할 소켓 채널
+     */
     public void register(SocketChannel ch) {
         pollerEventQueue.offer(new PollerEventImpl(ch, endpoint, this));
         selector.wakeup();
@@ -98,7 +132,7 @@ public class Poller implements Runnable {
                 }
 
                 if (key.isWritable()) {
-                    wrapper.flushWriteBuffer(key);
+                    wrapper.processWriteQueue(key);
                 }
             } catch (Exception e) {
                 if (wrapper != null) wrapper.closeChannel();
@@ -121,10 +155,19 @@ public class Poller implements Runnable {
         }
     }
 
+    /**
+     * 외부 스레드에서 특정 채널의 관심사를 READ로 변경하도록 스레드 안전하게 요청합니다.
+     * @param key 관심사를 변경할 채널의 SelectionKey
+     */
     public void requestSwitchToRead(SelectionKey key) {
         toRead .offer(key);
         selector.wakeup();
     }
+
+    /**
+     * 외부 스레드에서 특정 채널의 관심사를 WRITE로 변경하도록 스레드 안전하게 요청합니다.
+     * @param key 관심사를 변경할 채널의 SelectionKey
+     */
     public void requestSwitchToWrite(SelectionKey key) {
         toWrite.offer(key);
         selector.wakeup();
