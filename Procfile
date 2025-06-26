@@ -1,1 +1,1 @@
-web:    java -cp target/classes:target/dependency/* webserver.WebServer $PORT
+web:    java -cp target/classes:target/dependency/* com.example.elephant.WebServer $PORT

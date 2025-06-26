@@ -1,100 +1,98 @@
+// 루트 build.gradle
 plugins {
-    id 'java-library'
-    id 'application'
+    id 'java'
     id "org.sonarqube" version "4.0.0.2929"
     id 'jacoco'
 }
 
-group = 'org.nhnnext'
-version = '1.0'
-description = 'web-application-server'
+group = 'com.example.elephant'
+version = '1.0-SNAPSHOT'
+description = 'Elephant Project - custom Web Application Server and MVC Framework'
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+// 모든 모듈이 공통으로 사용하는 의존성
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'jacoco'
+
+    group = rootProject.group
+    version = rootProject.version
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'com.google.guava:guava:32.0.1-jre'
+        implementation 'org.slf4j:slf4j-api:1.7.36'
+
+        testImplementation 'org.assertj:assertj-core:3.26.0'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+        testImplementation 'org.mockito:mockito-core:5.15.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy 'jacocoTestReport'
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            html.required= true
+            xml.required = true
+            csv.required = false
+
+            // 각 모듈의 빌드 디렉토리 하위에 리포트가 생성되도록 경로를 지정
+            html.outputLocation = layout.buildDirectory.dir('reports/jacoco/test/html')
+            xml.outputLocation = layout.buildDirectory.file('reports/jacoco/test/jacocoTestReport.xml')
+        }
+
+        // 커버리지 검증은 리포트 생성 후에 수행
+        finalizedBy 'jacocoTestCoverageVerification'
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                enabled = false
+                element = 'CLASS'
+
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 0.5
+                }
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Javadoc).configureEach {
+        options.encoding = 'UTF-8'
     }
 }
-
-application {
-    mainClassName = "webserver.WebServer"
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'com.google.guava:guava:32.0.1-jre'
-    implementation 'ch.qos.logback:logback-classic:1.5.13'
-
-    testImplementation 'org.assertj:assertj-core:3.26.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testImplementation "org.mockito:mockito-core:5.15.2"
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-}
-
 
 sonarqube {
     properties {
         property "sonar.projectKey", project.findProperty("sonarProjectKey") ?: System.getenv("SONAR_PROJECT_KEY")
         property "sonar.host.url", project.findProperty("sonarHostUrl") ?: System.getenv("SONAR_HOST_URL")
         property "sonar.login", project.findProperty("sonarLogin") ?: System.getenv("SONAR_TOKEN")
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/jacoco.xml"
+        // 모든 하위 모듈에서 생성된 JaCoCo XML 리포트 경로를 동적으로 수집
+        property "sonar.coverage.jacoco.xmlReportPaths", files(subprojects.collect { "${it.buildDir}/reports/jacoco/test/jacocoTestReport.xml" }).asPath
     }
 }
 
 jacoco {
     // JaCoCo 버전
     toolVersion = '0.8.8'
-}
-
-test {
-    useJUnitPlatform()
-    jacoco {
-        destinationFile = layout.buildDirectory.file('jacoco/jacocoTest.exec').get().asFile
-    }
-    finalizedBy 'jacocoTestReport'
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        html.required= true
-        xml.required = true
-        csv.required = false
-        html.outputLocation= layout.buildDirectory.dir('jacocoHtml')
-        xml.outputLocation= layout.buildDirectory.file('jacoco.xml')
-    }
-    finalizedBy 'jacocoTestCoverageVerification'
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = false
-            element = 'CLASS'
-
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.5
-            }
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('run') {
-    ignoreExitValue = true   // Ctrl-C(143), SIGTERM(130)도 성공으로 간주
-}
-
-javadoc {
-    options.encoding('UTF-8')
 }
