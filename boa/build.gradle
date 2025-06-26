@@ -1,0 +1,5 @@
+description = 'Boa - MVC Framework'
+dependencies {
+    // boa 프레임워크는 trunk 모듈 위에서 동작
+    implementation project(':trunk')
+}

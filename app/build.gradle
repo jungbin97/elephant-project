@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClass = 'com.example.elephant.WebServer' // WebServer의 최종 패키지 경로
+}
+
+dependencies {
+    implementation project(':boa')
+    implementation project(':trunk')
+
+    implementation 'ch.qos.logback:logback-classic:1.5.13'
+}
+
